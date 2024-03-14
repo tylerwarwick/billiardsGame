@@ -7,10 +7,10 @@ import os
 # Print Python's module search paths
 print(sys.path)
 
-# Add the project root directory to Python's module search path
+# Add the parent directory of the project root directory to Python's module search path
 current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.abspath(os.path.join(current_dir, ".."))
-sys.path.append(parent_dir)
+project_root = os.path.abspath(os.path.join(current_dir, "..", ".."))
+sys.path.append(project_root)
 
 
 from server.modules.Physics import Physics
