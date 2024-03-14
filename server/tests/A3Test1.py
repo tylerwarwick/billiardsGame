@@ -1,7 +1,7 @@
 import math;
 import random;
 
-from ..modules.Physics import Physics
+from server.modules.Physics import Physics
 
 def nudge():
     return 0.0 #random.uniform( -1.5, 1.5 );
