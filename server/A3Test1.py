@@ -1,19 +1,6 @@
 import math;
 import random;
-
-import sys
-import os
-
-# Print Python's module search paths
-print(sys.path)
-
-# Add the parent directory of the project root directory to Python's module search path
-current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, "..", ".."))
-sys.path.append(project_root)
-
-
-from server.modules.Physics import Physics
+import Physics
 
 def nudge():
     return 0.0 #random.uniform( -1.5, 1.5 );
