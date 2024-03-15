@@ -1,4 +1,4 @@
-import server.Physics as Physics;
+import Physics;
 
 def write_svg( table_id, table ):
     with open( "table%02d.svg" % table_id, "w" ) as fp:

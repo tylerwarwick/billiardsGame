@@ -28,6 +28,10 @@ def deleteTables():
 # My own request handler (GETs and POSTs)
 class PoolServer( BaseHTTPRequestHandler ):
     # Handle GET requests
+    """
+    GET Requests we need:
+    - newShot
+    """
     def do_GET(self):
         # Parse url
         parsed  = urlparse( self.path );

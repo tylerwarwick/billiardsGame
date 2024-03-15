@@ -1,4 +1,4 @@
-import phylib as phylib;
+import phylib;
 import os;
 import sqlite3;
 import math as m;
