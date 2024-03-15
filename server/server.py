@@ -257,7 +257,13 @@ class PoolServer( BaseHTTPRequestHandler ):
             
         elif parsed.path == "/newgame":
             print("POSTED")
-            
+              # generate the headers
+            self.send_response( 200 ); # OK
+            self.send_header( "Content-type", "text/html" );
+            self.send_header( "Content-length", len(content) );
+            self.end_headers();
+            self.wfile.write("Hello")
+
         else:
             # generate 404 for POST requests that aren't the file above
             self.send_response( 404 );
