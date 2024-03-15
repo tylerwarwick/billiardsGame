@@ -13,7 +13,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler;
 
 # Define routes 
 routes = {
-            '/': 'client/index.html',
+            '/': 'client/index.html'
         }
 
 
