@@ -255,7 +255,9 @@ class PoolServer( BaseHTTPRequestHandler ):
             # send it to the browser
             self.wfile.write(bytes(content, "utf-8"));
             
-
+        elif parsed.path == "/newgame":
+            print("POSTED")
+            
         else:
             # generate 404 for POST requests that aren't the file above
             self.send_response( 404 );
