@@ -20,29 +20,42 @@ routes = {
 # used to parse the URL and extract form data for GET requests
 from urllib.parse import parse_qs, urlparse, parse_qsl;
 
+def addStillBall(table, num, x, y):
+    ball = p.StillBall(num, p.Coordinate(x, y))
+    table += ball
 
 # Helper function to make new table
 def newTable():
+    # Get blank table obj 
     table = p.Table()
 
     # Declare reference point
     ref = p.TABLE_WIDTH/2
 
-    # Need ball to transfer props with
-    ball = p.StillBall(0, p.Coordinate(ref, p.TABLE_LENGTH - ref))
-
     # Add cue ball
-    table += ball
+    addStillBall(table, 0, ref, p.TABLE_LENGTH - ref)
     
     # Add balls 1-15
-    ball = p.StillBall(1, p.Coordinate(ref, ref))
-    table += ball
-    ball = p.StillBall(1, p.Coordinate(ref, ref)) 
+    addStillBall(table, 1, ref, ref)
+    addStillBall(table, 2, ref - (p.BALL_DIAMETER+4.0)/2.0, ref-m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+4.0))
+    addStillBall(table, 3, ref + (p.BALL_DIAMETER+4.0)/2.0, ref-m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+4.0))
+    addStillBall(table, 4, ref - (p.BALL_DIAMETER+12.0)/2.0, ref-m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+12.0))
+    addStillBall(table, 5, ref, ref-m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+4.0))
+    addStillBall(table, 6, ref + (p.BALL_DIAMETER+12.0)/2.0, ref-m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+12.0))
+    
 
-    os.remove('./test.svg')
+    
+
+   
+    
+    if (os.path.exists("./test.svg")):
+        os.remove('./test.svg')
+
     with open('test.svg', 'w') as file:
                     # Create file
                     file.write(table.svg())
+    
+    return table
  
     
 
@@ -301,7 +314,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             newGame = p.Game(None, "Game1", p1, p2)
 
             # Make brand new table with break setup
-            newTable = p.Table()
+            table = newTable()
 
 
             # generate the headers
