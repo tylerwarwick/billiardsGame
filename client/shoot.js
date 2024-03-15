@@ -71,14 +71,6 @@ $.ajax({
             vector.attr("y2", y2)
         }
 
-        function updateVector(newX, newY){
-            if (vector){
-                vector.attr("x2", newX)
-                vector.attr("y2", newY)
-            }
-            else console.log("Vector not defined!")
-           
-        }
 
         function removeVector(){
             vector.addClass("hidden")
