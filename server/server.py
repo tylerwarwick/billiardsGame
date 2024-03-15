@@ -11,9 +11,9 @@ import Physics as p
 # web server parts
 from http.server import HTTPServer, BaseHTTPRequestHandler;
 
-# Define routes
+# Define routes 
 routes = {
-            '/': '../client/index.html',
+            '/': 'client/index.html',
         }
 
 
