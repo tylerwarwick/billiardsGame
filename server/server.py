@@ -42,7 +42,6 @@ class PoolServer( BaseHTTPRequestHandler ):
         # Parse url
         parsed  = urlparse( self.path );
 
-        print('Hello')
         # We'll look for any of the existing server routes
         # check if the web-pages matches the list
         if parsed.path in routes:
