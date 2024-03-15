@@ -17,11 +17,26 @@
                 </button>
             </div>
         </nav>
-        <!-- Main SVG's -->
-        <div id="svgContainer" class="bg-white w-full h-auto flex flex-col items-center justify-center pt-36 space-y-10 pb-36">
+        <div class="relative">
             
+
+            <!-- Main SVG's -->
+            <div id="svgContainer" class="bg-transparent w-full h-auto flex flex-col items-center justify-center pt-36 space-y-10 pb-36 absolute z-10 ">
+             
+            </div>
+
+            <!-- Vector SVG -->
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" class="w-full h-screen absolute pointer-events-none z-20 bg-transparent">
+                <defs>
+                    <marker id="arrowhead" markerWidth="5" markerHeight="5" refX="0" refY="3.5" orient="auto" markerUnits="strokeWidth">
+                        <path d="M10,0 L10,7 L0,3.5 z" fill="black" />
+                    </marker>
+                </defs>
+                <line id="vector" x1="0" y1="0" x2="0" y2="700" stroke-width="10" stroke="black" class="hidden" marker-start="url(#arrowhead)"/>
+            </svg>
+
+
         </div>
-        
     </body>
 
 <!-- Need to embed scripts for loading and interacting with svgs-->

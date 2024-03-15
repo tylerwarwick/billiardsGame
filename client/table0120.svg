@@ -19,5 +19,4 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
  <circle cx="644" cy="622" r="28" fill="BLUE" />
  <circle cx="705" cy="622" r="28" fill="RED" />
  <circle id="cueBall" cx="677" cy="933" r="28" fill="WHITE" />
- <line id="vector" x1="0" y1="0" x2="0" y2="0" stroke-width="28" stroke="black" class="hidden" />
 </svg>

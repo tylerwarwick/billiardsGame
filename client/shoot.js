@@ -1,3 +1,28 @@
+// Define function that determines the max length of vector on screen
+const length = (x, y) => {
+    return Math.sqrt((x*x) + (y*y))
+}
+
+
+// Take angle and output vector of fixed length
+const maxVector = (x1, y1, x2, y2) => {
+    // Get length
+    const len = length(x2-x1, y2-y1)
+
+    if (len == 0) return [0, 0]
+
+    return [x2-x1, y2-y1]
+
+    // If within allotted range, return unchanged offset
+    if (len < 500){
+        return [x2-x1, y2-y1]
+    }
+
+    // Otherwise shorten magnitude while maintaining angle (unit vector) 
+    return [500*(x2-x1)/len, 500*(y2-y1)/len]
+
+}
+
 // Load svg content in
 // This is the only way that works cross browser
 // SVG behaviour is not well defined currently
@@ -36,45 +61,16 @@ $.ajax({
         const windowWidth = window.innerWidth;
         const windowHeight = window.innerHeight;
 
-        // Get the dimensions of the SVG container
-        const svgContainerWidth = svgContainer.width();
-        const svgContainerHeight = svgContainer.height();
-
-        // Calculate the position of the SVG container relative to the viewport
-        const svgContainerLeft = (windowWidth - svgContainerWidth) / 2;
-        const svgContainerTop = (windowHeight - svgContainerHeight) / 2;
-
+        
 
         // Gonna define line creator function here
         const vector = $("#vector")
         function makeVector(x1, y1, x2, y2) {
-            // Create a new line element
-            /*
-            let line = $('<line/>', {
-                id: 'vector',
-                x1: x1,
-                y1: y1,
-                x2: x2,
-                y2: y2,
-                'stroke-width': '28',
-                stroke: 'black',
-                style: 'z-index: 9999;'
-            })
-   
-            // Append the line to the SVG container
-            svgContent.append(line);
-
-            // Define pointer to actual line element in DOM
-            vector = $('#vector')[0]; // Convert jQuery object to DOM element
-            */
-            
             vector.removeClass("hidden")
             vector.attr("x1", x1)
             vector.attr("y1", y1)
             vector.attr("x2", x2)
             vector.attr("y2", y2)
-            console.log(svgContainerWidth)
-            
         }
 
         function updateVector(newX, newY){
@@ -110,8 +106,12 @@ $.ajax({
                 // Tell the console what our vector components look like
                 console.log('Dragging... from: ', mouseX, " ", mouseY);
                 console.log("to: ", event.clientX, "  ", event.clientY) 
- 
-                makeVector(mouseX, mouseY, event.clientX, event.clientY)
+
+                const delta = maxVector(mouseX, event.clientX, mouseY, event.clientY)
+
+                // Can circle back with extra time to change mouseX and mouseY
+                // So no clipping occurs with vector and cue ball
+                makeVector(mouseX, mouseY, mouseX+delta[0], mouseY+delta[1])
             }
 
           });
