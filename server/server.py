@@ -42,6 +42,7 @@ class PoolServer( BaseHTTPRequestHandler ):
         # Parse url
         parsed  = urlparse( self.path );
 
+        print('Hello')
         # We'll look for any of the existing server routes
         # check if the web-pages matches the list
         if parsed.path in routes:
@@ -55,11 +56,11 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Set headers
             self.send_response( 200 ); # OK
             self.send_header( "Content-type", "text/html" );
-            self.send_header( "Content-length", len( content ) );
+            self.send_header( "Content-length", len(content));
             self.end_headers();
 
             # Send it to browser
-            self.wfile.write( bytes( content, "utf-8" ) );
+            self.wfile.write(bytes(content, "utf-8"));
 
             # Close the file
             fp.close();
