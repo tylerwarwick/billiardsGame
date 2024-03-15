@@ -268,7 +268,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             
             p1 = form.getvalue('player1')
             p2 = form.getvalue('player2')
-            print(p1)
+            print(form)
             # Make a new game with game class
             newGame = p.Game(None, "Game1", p1, p2)
               # generate the headers
