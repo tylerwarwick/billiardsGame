@@ -11,6 +11,12 @@ import Physics as p
 # web server parts
 from http.server import HTTPServer, BaseHTTPRequestHandler;
 
+# Define routes
+routes = {
+            '/': '../client/index.html',
+        }
+
+
 # used to parse the URL and extract form data for GET requests
 from urllib.parse import urlparse, parse_qsl;
 
@@ -38,10 +44,12 @@ class PoolServer( BaseHTTPRequestHandler ):
 
         # We'll look for any of the existing server routes
         # check if the web-pages matches the list
-        if parsed.path in [ '/' ]:
+        if parsed.path in routes:
+
+            path = routes[parsed.path]
 
             # Get HTML file
-            fp = open('../client/index.html');
+            fp = open(path);
             content = fp.read();
 
             # Set headers
