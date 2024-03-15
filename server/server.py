@@ -255,7 +255,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             # send it to the browser
             self.wfile.write(bytes(content, "utf-8"));
             
-        elif parsed.path == "/newgame":
+        elif parsed.path == "/newGame":
             print("POSTED")
               # generate the headers
             self.send_response( 200 ); # OK
