@@ -39,9 +39,9 @@ def newTable():
     addStillBall(table, 1, ref, ref)
     addStillBall(table, 2, ref - (p.BALL_DIAMETER+4.0)/2.0, ref-m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+4.0))
     addStillBall(table, 3, ref + (p.BALL_DIAMETER+4.0)/2.0, ref-m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+4.0))
-    addStillBall(table, 4, ref - (p.BALL_DIAMETER+12.0)/2.0, ref-m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+12.0))
-    addStillBall(table, 5, ref, ref-m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+4.0))
-    addStillBall(table, 6, ref + (p.BALL_DIAMETER+12.0)/2.0, ref-m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+12.0))
+    addStillBall(table, 4, ref - (p.BALL_DIAMETER+12.0)/2.0 * 1.5, ref - (m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+4.0))*2)
+    addStillBall(table, 5, ref, ref - (m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+4.0))*2)
+    addStillBall(table, 6, ref + (p.BALL_DIAMETER+4.0)/2.0 * 1.5, ref - (m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+4.0))*2)
     
 
     
