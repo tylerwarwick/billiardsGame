@@ -18,7 +18,7 @@ routes = {
 
 
 # used to parse the URL and extract form data for GET requests
-from urllib.parse import urlparse, parse_qsl;
+from urllib.parse import parse_qs, urlparse, parse_qsl;
 
 
 # Helper function to delete files
@@ -258,17 +258,13 @@ class PoolServer( BaseHTTPRequestHandler ):
         elif parsed.path == "/newGame":
             # Get form data
               # get data send as Multipart FormData (MIME format)
-            form = cgi.FieldStorage( fp=self.rfile,
-                                     headers=self.headers,
-                                     environ = { 'REQUEST_METHOD': 'POST',
-                                                 'CONTENT_TYPE': 
-                                                   self.headers['Content-Type'],
-                                               } 
-                                   );
+            content_length = int(self.headers['Content-Length'])
+            body = self.rfile.read(content_length).decode('utf-8')
+            form_data = parse_qs(body)
             
-            p1 = form.getvalue('player1')
-            p2 = form.getvalue('player2')
-            print(form)
+            p1 = form_data['player1'][0]
+            p2 = form.getvalue['player2'][0]
+            print(p1)
             # Make a new game with game class
             newGame = p.Game(None, "Game1", p1, p2)
               # generate the headers
