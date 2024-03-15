@@ -272,8 +272,9 @@ class PoolServer( BaseHTTPRequestHandler ):
             p2 = form.getvalue("player2")
             print(p1)
             # Make a new game with game class
-            #newGame = p.Game(None, "Game1", p1, p2)
-              # generate the headers
+            newGame = p.Game(None, "Game1", p1, p2)
+
+            # generate the headers
             self.send_response( 200 ); # OK
             self.send_header( "Content-type", "text/html" );
             self.send_header( "Content-length", 5 );
