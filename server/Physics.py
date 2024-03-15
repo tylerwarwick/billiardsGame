@@ -93,6 +93,11 @@ class StillBall( phylib.phylib_object ):
         #Dereference object
         pos = self.obj.still_ball.pos
 
+        # Append id tag if cueball for backend
+        if (self.obj.still_ball.number == 0):
+            return """ <circle id="cueBall" cx="%d" cy="%d" r="%d" fill="%s" />\n""" % (pos.x, pos.y, BALL_RADIUS, BALL_COLOURS[self.obj.still_ball.number])
+
+
         #Return svg representation
         return """ <circle cx="%d" cy="%d" r="%d" fill="%s" />\n""" % (pos.x, pos.y, BALL_RADIUS, BALL_COLOURS[self.obj.still_ball.number])
 
@@ -126,6 +131,10 @@ class RollingBall( phylib.phylib_object ):
         #Dereference object
         pos = self.obj.rolling_ball.pos
 
+        # Append id tag if cueball for backend
+        if (self.obj.rolling_ball.number == 0):
+            return """ <circle id="cueBall" cx="%d" cy="%d" r="%d" fill="%s" />\n""" % (pos.x, pos.y, BALL_RADIUS, BALL_COLOURS[self.obj.rolling_ball.number])
+        
         #Return svg representation
         return """ <circle cx="%d" cy="%d" r="%d" fill="%s" />\n""" % (pos.x, pos.y, BALL_RADIUS, BALL_COLOURS[self.obj.rolling_ball.number])
 
