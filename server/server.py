@@ -260,7 +260,7 @@ class PoolServer( BaseHTTPRequestHandler ):
               # generate the headers
             self.send_response( 200 ); # OK
             self.send_header( "Content-type", "text/html" );
-            self.send_header( "Content-length", len(content) );
+            self.send_header( "Content-length", 5 );
             self.end_headers();
             self.wfile.write("Hello")
 
