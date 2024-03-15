@@ -262,7 +262,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             self.send_header( "Content-type", "text/html" );
             self.send_header( "Content-length", 5 );
             self.end_headers();
-            self.wfile.write(bytes("Hello"))
+            self.wfile.write(("Hello").encode('utf-8'))
 
         else:
             # generate 404 for POST requests that aren't the file above
