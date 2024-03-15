@@ -256,7 +256,21 @@ class PoolServer( BaseHTTPRequestHandler ):
             self.wfile.write(bytes(content, "utf-8"));
             
         elif parsed.path == "/newGame":
-            print("POSTED")
+            # Get form data
+              # get data send as Multipart FormData (MIME format)
+            form = cgi.FieldStorage( fp=self.rfile,
+                                     headers=self.headers,
+                                     environ = { 'REQUEST_METHOD': 'POST',
+                                                 'CONTENT_TYPE': 
+                                                   self.headers['Content-Type'],
+                                               } 
+                                   );
+            
+            p1 = form.getvalue("player1")
+            p2 = form.getvalue("player2")
+            print(p1)
+            # Make a new game with game class
+            newGame = p.Game(None, "Game1", p1, p2)
               # generate the headers
             self.send_response( 200 ); # OK
             self.send_header( "Content-type", "text/html" );
