@@ -21,6 +21,32 @@ routes = {
 from urllib.parse import parse_qs, urlparse, parse_qsl;
 
 
+# Helper function to make new table
+def newTable():
+    table = p.Table()
+
+    # Declare reference point
+    ref = p.TABLE_WIDTH/2
+
+    # Need ball to transfer props with
+    ball = p.StillBall(0, p.Coordinate(ref, p.TABLE_LENGTH - ref))
+
+    # Add cue ball
+    table += ball
+    
+    # Add balls 1-15
+    ball = p.StillBall(1, p.Coordinate(ref, ref))
+    table += ball
+    ball = p.StillBall(1, p.Coordinate(ref, ref)) 
+
+    os.remove('./test.svg')
+    with open('test.svg', 'w') as file:
+                    # Create file
+                    file.write(table.svg())
+ 
+    
+
+
 # Helper function to delete files
 def deleteTables():
     files = os.listdir('.')
@@ -273,6 +299,10 @@ class PoolServer( BaseHTTPRequestHandler ):
             print(p1)
             # Make a new game with game class
             newGame = p.Game(None, "Game1", p1, p2)
+
+            # Make brand new table with break setup
+            newTable = p.Table()
+
 
             # generate the headers
             self.send_response( 200 ); # OK
