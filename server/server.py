@@ -38,10 +38,10 @@ class PoolServer( BaseHTTPRequestHandler ):
 
         # We'll look for any of the existing server routes
         # check if the web-pages matches the list
-        if parsed.path in [ '/shoot.html' ]:
+        if parsed.path in [ '/' ]:
 
             # Get HTML file
-            fp = open('../client'+self.path);
+            fp = open('../client/index.html');
             content = fp.read();
 
             # Set headers
