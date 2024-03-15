@@ -11,8 +11,6 @@ const maxVector = (x1, y1, x2, y2) => {
 
     if (len == 0) return [0, 0]
 
-    return [x2-x1, y2-y1]
-
     // If within allotted range, return unchanged offset
     if (len < 500){
         return [x2-x1, y2-y1]
@@ -107,11 +105,13 @@ $.ajax({
                 console.log('Dragging... from: ', mouseX, " ", mouseY);
                 console.log("to: ", event.clientX, "  ", event.clientY) 
 
-                const delta = maxVector(mouseX, event.clientX, mouseY, event.clientY)
+                const [deltaX, deltaY] = maxVector(mouseX, mouseY, event.clientX, event.clientY)
 
+                console.log("x displacement: ", event.clientX - mouseX)
+                console.log("Calc delta: ", deltaX)
                 // Can circle back with extra time to change mouseX and mouseY
                 // So no clipping occurs with vector and cue ball
-                makeVector(mouseX, mouseY, mouseX+delta[0], mouseY+delta[1])
+                makeVector(mouseX, mouseY, mouseX+deltaX, mouseY+deltaY)   
             }
 
           });
