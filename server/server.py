@@ -109,7 +109,14 @@ class PoolServer( BaseHTTPRequestHandler ):
             gameId = parsedPath.split('/')[-1]
 
             # TODO: Dynamically fetch and feed latest shot to client
-
+            """ 
+            Need to get most recent state of game, as well as who last shot
+            Then serve page with interactable cue with that table state
+            Then player will make post request for new shot
+            and then we somehow (tbd) dynamically animate the screen.
+            Once that finishes we are back to beginning. This way if the user refreshes,
+            we can just return to most recent state of game
+            """
 
 
             # Set headers
@@ -119,7 +126,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             self.end_headers();
 
             # Write content to screen 
-            
+            self.wfile.write(bytes("Fetching game: %s" % gameId, "utf-8"))
 
 
 
@@ -181,7 +188,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             self.wfile.write(bytes(response, "utf-8"))
 
         else:
-            # generate 404 for POST requests that aren't the file above
+            # generate 404 for POST requests that aren't any of the above
             self.send_response( 404 );
             self.end_headers();
             self.wfile.write( bytes( "404: %s not found" % self.path, "utf-8" ) );

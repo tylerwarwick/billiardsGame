@@ -707,6 +707,19 @@ class Database:
         self.conn.commit()
         cur.close()
 
+    # Method for finding latest table given a gameId
+    def latestGameState(self, gameId):
+        # Get cursor
+        cur = self.conn.cursor()
+        
+        # Query for most recent state of table
+        query = """
+                
+
+
+                """
+        cur.execute("")
+
 
     # Close method
     def close(self):
