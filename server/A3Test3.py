@@ -30,11 +30,9 @@ table += sb;
 
 # 3 ball
 pos = Physics.Coordinate(
-                Physics.TABLE_WIDTH/2.0 + (Physics.BALL_DIAMETER+4.0)/2.0 +
-                nudge(),
+                Physics.TABLE_WIDTH/2.0 + (Physics.BALL_DIAMETER+4.0)/2.0, 
                 Physics.TABLE_WIDTH/2.0 - 
-                math.sqrt(3.0)/2.0*(Physics.BALL_DIAMETER+4.0) +
-                nudge()
+                math.sqrt(3.0)/2.0*(Physics.BALL_DIAMETER+4.0) 
                 );
 sb = Physics.StillBall( 3, pos );
 table += sb;
