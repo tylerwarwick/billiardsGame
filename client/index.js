@@ -11,8 +11,7 @@ $(document).ready(function() {
 
         // Serialize form data
         const formData = $(this).serialize(); 
-        console.log(formData)
-
+       
         // Send form data to server using AJAX
         $.ajax({
             url: '/newGame',
