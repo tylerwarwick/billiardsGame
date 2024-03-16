@@ -29,52 +29,6 @@
             </div>
         </div>
     </section>
-    <script src="index.js">
-        /* 
-        We will be doing one page game
-        Given the constraint of httpServer, dynamically changing page content 
-        makes the most sense (as opposed to redirects)
-        */ 
-        /*
-        // Handle home page new game creation
-        $(document).ready(function() {
-            $('#playerForm').submit(function(event) {
-                // Prevent default form submission
-                event.preventDefault(); 
-
-                // Serialize form data into an array of objects
-                let formData = $(this).serializeArray();
-
-                // Convert array of objects into JSON format
-                let jsonData = {};
-                formData.forEach(function(item) {
-                    jsonData[item.name] = item.value;
-                });
-
-                console.log(formData)
-                console.log(JSON.stringify(jsonData))
-                data = JSON.stringify(jsonData) 
-
-                // Send form data to server using AJAX
-                $.ajax({
-                    url: '/newGame',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: formData,
-                    success: function(response) {
-                        console.log('New game created successfully');
-                        console.log(response.data)
-                        console.log(response.JSON)
-                        // Redirect to the new page or handle response as needed
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Failed to create new game:', error);
-                        // Handle error response from the server
-                    }
-                });
-            });
-        });
-        */
-    </script>
+    <script src="index.js"></script>
 </body>
 </html>

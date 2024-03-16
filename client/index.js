@@ -21,12 +21,15 @@ $(document).ready(function() {
             success: function(response) {
                 console.log('New game created successfully');
                 console.log(parseInt(response))
-                //window.location.href('/')
-                // Redirect to the new page or handle response as needed
+
+                // Move into game session
+                window.location.replace(`/game/${parseInt(response)}`)
             },
             error: function(xhr, status, error) {
                 console.error('Failed to create new game:', error);
+
                 // Handle error response from the server
+                alert("Something went wrong!")
             }
         });
     });
