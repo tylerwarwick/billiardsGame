@@ -104,6 +104,25 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Close the file
             fp.close();
            
+        elif parsedPath.startswith('/game/'): 
+            # Get game id from path (subject to change later)
+            gameId = parsedPath.split('/')[-1]
+
+            # TODO: Dynamically fetch and feed latest shot to client
+
+
+
+            # Set headers
+            self.send_response( 200 ); # OK
+            self.send_header( "Content-type", "text/html" );
+            self.send_header( "Content-length", 0);
+            self.end_headers();
+
+            # Write content to screen 
+            
+
+
+
 
         # If the path doesn't match any routes, send back 404
         else:
