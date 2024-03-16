@@ -20,6 +20,8 @@ $(document).ready(function() {
             data: formData,
             success: function(response) {
                 console.log('New game created successfully');
+                console.log(parseInt(response))
+                //window.location.href('/')
                 // Redirect to the new page or handle response as needed
             },
             error: function(xhr, status, error) {

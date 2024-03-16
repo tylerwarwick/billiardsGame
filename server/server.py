@@ -1,20 +1,11 @@
 import os # Check if file exists in directory
 import re # Need regular expressions
 import sys; # used to get argv
-import cgi; # used to parse Mutlipart FormData 
-            # this should be replace with multipart in the future
-
 import math as m
-
-import urllib3 # Need math and physics for table construction
 import Physics as p
-import json
-
-# web server parts
 from http.server import HTTPServer, BaseHTTPRequestHandler
-
-# used to parse the URL and extract form data for GET requests
 from urllib.parse import parse_qs, urlparse, parse_qsl;
+import random
 
 
 
@@ -54,14 +45,6 @@ def newTable():
     addStillBall(table, 13, ref, ref - (m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+4.0))*4)    
     addStillBall(table, 14, ref + (p.BALL_DIAMETER+4.0)/2.0 * 2, ref - (m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+4.0))*4)  
     addStillBall(table, 15, ref + (p.BALL_DIAMETER+4.0)/2.0 * 4, ref - (m.sqrt(3.0) / 2.0 * (p.BALL_DIAMETER+4.0))*4)    
-
-
-    if (os.path.exists("./test.svg")):
-        os.remove('./test.svg')
-
-    with open('test.svg', 'w') as file:
-                    # Create file
-                    file.write(table.svg())
     
     return table
  
@@ -154,17 +137,29 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Make a new game with game class
             # Game is automatically written to db with init
             newGame = p.Game(None, "Game1", p1, p2)
-            
+
             # Make brand new table with break setup
             table = newTable()
 
+            # Put table in db
+            # Also log a new shot in db (with vel of 0)
+            # Will make it easier to fetch most current shot for given game id
+            # Randomly pick p1 or p2, whoever is not picked will take first actual shot
+            if (random.choice([True, False])):
+                newGame.shoot("tbd", p1, table, 0, 0)
+            else:
+                newGame.shoot("tbd", p2, table, 0, 0)
 
+            # Need to send gameId back to client for new game window
+            response = str(newGame.gameID)
             # generate the headers
             self.send_response( 200 ); # OK
             self.send_header( "Content-type", "text/html" );
-            self.send_header( "Content-length", 5 );
+            self.send_header( "Content-length", len(response));
             self.end_headers();
-            self.wfile.write(("Hello").encode('utf-8'))
+        
+            # Actually pass the id back
+            self.wfile.write(bytes(response, "utf-8"))
 
         else:
             # generate 404 for POST requests that aren't the file above

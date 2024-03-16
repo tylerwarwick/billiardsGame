@@ -811,7 +811,7 @@ class Game:
             frames = m.floor((table.time - startTime) / FRAME_INTERVAL)
 
             # Make a table for each frame in this segment of time
-            for i in range(0, frames):
+            for i in range(0, frames+1):
                 # Get new table with roll applied
                 newTable = startTable.roll(i * FRAME_INTERVAL)
               
