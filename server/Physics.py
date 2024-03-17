@@ -518,14 +518,16 @@ class Database:
                 """
 
         # Store results to be worked with 
-        data = cur.execute(query, (tableID+1,)).fetchall()
+        # ** TRY TO GET RID OF ARBITRARY ID OFFSETS
+        data = cur.execute(query, (tableID,)).fetchall()
     
         # If we get no results, return none
         if (not data):
             return None
 
         # Query to get table time (only do so after checking this table exists above)
-        table.time = cur.execute("SELECT TIME FROM TTable WHERE TABLEID = ?", (tableID + 1,)).fetchone()[0]   
+        # ** TRY TO GET RID OF ARBITRARY ID OFFSETS
+        table.time = cur.execute("SELECT TIME FROM TTable WHERE TABLEID = ?", (tableID,)).fetchone()[0]   
 
         # Now put into actual table to be returned
         for row in data:
@@ -617,7 +619,8 @@ class Database:
         cur.close()
 
         # Return tableId (in 0 index context)
-        return tableId - 1
+        # ** TRY TO GET RID OF ARBITRARY ID OFFSETS
+        return tableId 
 
     # Get game method for game class
     def getGame(self, gameID):
@@ -665,6 +668,7 @@ class Database:
         cur.close()
 
         # Pass gameID back to game instance caller (Decrement for 0 indexing?)
+        # ** TRY TO GET RID OF ARBITRARY ID OFFSETS
         return gameID
 
     # New shot for shoot class
@@ -701,7 +705,8 @@ class Database:
         cur = self.conn.cursor()
 
         # Insert into db (increment tableId)
-        cur.execute("INSERT INTO TableShot (TABLEID, SHOTID) VALUES (?, ?)", (tableId + 1, shotId)) 
+        # ** TRY TO GET RID OF ARBITRARY ID OFFSETS
+        cur.execute("INSERT INTO TableShot (TABLEID, SHOTID) VALUES (?, ?)", (tableId, shotId)) 
 
         # Close and commit
         self.conn.commit()
@@ -759,7 +764,8 @@ class Game:
         # First constructor format
         if (gameID is not None and gameName is None and player1Name is None and player2Name is None):
             # For this constructor we know the gameID
-            self.gameID = gameID + 1
+            # ** TRY TO GET RID OF ARBITRARY ID OFFSETS
+            self.gameID = gameID 
 
             # Get game data from db
             [gName, p1, p2] = db.getGame(gameID+1)
