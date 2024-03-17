@@ -734,7 +734,10 @@ class Database:
         thisPlayersTurn = cur.execute("""SELECT PLAYERNAME 
                                          FROM Player 
                                          WHERE GAMEID = ? AND PLAYERID != ?
-                                      """, (gameId, mostRecentPlayerId))
+                                      """, (gameId, mostRecentPlayerId)).fetchone()[0]
+
+        # Close connection off 
+        cur.close()
         
         # Return most recent table and who's turn it is
         return latestTable, thisPlayersTurn
