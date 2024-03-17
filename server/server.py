@@ -197,7 +197,7 @@ class PoolServer( BaseHTTPRequestHandler ):
 # Main piece to instantiate server on port parsed from argv
 if __name__ == "__main__":
     # Create server on port passed by argv
-    httpd = HTTPServer(('localhost', int(sys.argv[1])), PoolServer);
+    httpd = HTTPServer(('0.0.0.0', 8080), PoolServer);
 
     # Let the console know the server is running at specified port
     print( "Server listing in port:  ", int(sys.argv[1]));
