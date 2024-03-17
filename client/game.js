@@ -12,12 +12,12 @@ const maxVector = (x1, y1, x2, y2) => {
     if (len == 0) return [0, 0]
 
     // If within allotted range, return unchanged offset
-    if (len < 500){
+    if (len < 250){
         return [x2-x1, y2-y1]
     }
 
     // Otherwise shorten magnitude while maintaining angle (unit vector) 
-    return [500*(x2-x1)/len, 500*(y2-y1)/len]
+    return [250*(x2-x1)/len, 250*(y2-y1)/len]
 
 }
 

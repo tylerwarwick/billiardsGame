@@ -22,10 +22,10 @@ FRAME_INTERVAL = 0.01
 HEADER = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
 "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="700" height="1375" viewBox="-25 -25 1400 2750"
+<svg height="70vh" viewBox="-25 -25 1400 2750"
 xmlns="http://www.w3.org/2000/svg"
 xmlns:xlink="http://www.w3.org/1999/xlink">
-<rect height="70vh" x="0" y="0" fill="#C0D0C0" />"""
+<rect width="1350" height="2700" x="0" y="0" fill="#C0D0C0" />"""
 
 FOOTER = """</svg>\n"""
 
@@ -639,6 +639,7 @@ class Database:
         # Call query
         data = cur.execute(query, (gameID,)).fetchall()
 
+
         # Commit and close
         self.conn.commit()
         cur.close()
@@ -728,6 +729,9 @@ class Database:
                 """
 
         data = cur.execute(query, (gameId,)).fetchone()
+
+        if data is None:
+            raise Exception("Our query for latest shot failed! This method as passed this ID: ", gameId)
         
         # Get latest table
         latestTable = self.readTable(data[0])

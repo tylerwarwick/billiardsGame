@@ -65,11 +65,11 @@ def deleteTables():
 # Define routes 
 routes = {
             '/': '../client/index.html',
-            '/index.js': '../client/index.js',
-            '/game.js': '../client/game.js'
+            '/client/index.js': '../client/index.js',
+            '/client/game.js': '../client/game.js'
         }
 
-staticFiles = ['../client/index.html', '../client/index.js']
+staticFiles = ['../client/index.html', '../client/index.js', "../client/game.js"]
 
 
 # My own request handler (GETs and POSTs)
@@ -105,8 +105,9 @@ class PoolServer( BaseHTTPRequestHandler ):
 
             # Close the file
             fp.close();
+
            
-        elif parsedPath.startswith('/game/'): 
+        elif parsedPath.startswith('/game/'):
             # Get game id from path (subject to change later)
             gameId = parsedPath.split('/')[-1]
 
