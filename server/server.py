@@ -219,7 +219,7 @@ if __name__ == "__main__":
     httpd = HTTPServer(('0.0.0.0', 8080), PoolServer);
 
     # Let the console know the server is running at specified port
-    print( "Server listing in port: 8080");
+    print( "Server listing in port: 8080 TEST");
 
     # Run server indefinetely (Terminate by stopping terminal session)
     httpd.serve_forever();
