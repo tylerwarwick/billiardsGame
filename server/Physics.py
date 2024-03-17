@@ -25,7 +25,7 @@ HEADER = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg width="700" height="1375" viewBox="-25 -25 1400 2750"
 xmlns="http://www.w3.org/2000/svg"
 xmlns:xlink="http://www.w3.org/1999/xlink">
-<rect width="1350" height="2700" x="0" y="0" fill="#C0D0C0" />"""
+<rect height="70vh" x="0" y="0" fill="#C0D0C0" />"""
 
 FOOTER = """</svg>\n"""
 
