@@ -21,21 +21,10 @@ const maxVector = (x1, y1, x2, y2) => {
 
 }
 
-// Load svg content in
-// This is the only way that works cross browser
-// SVG behaviour is not well defined currently
-$.ajax({
-    url: 'table0120.svg',
-    dataType: 'xml',
-    success: (svgData) => {
-        svgContent = $(svgData.documentElement)
-
-        // Get div where we will insert svg content
+$(document).ready(function(){
+        // Get svg div
         const svgContainer = $('#svgContainer')
 
-        // Insert the SVG content into the container
-        svgContainer.append(svgContent);
-        
         // Now we can interact with the SVG elements
         // Let's get cueBall element so we can work with it
         const cueBall = svgContainer.find("#cueBall")
@@ -90,7 +79,7 @@ $.ajax({
             mouseY = event.clientY;
         })
 
-        $(document).on('mousemove', function(event) {
+        $(this).on('mousemove', function(event) {
             // Check if dragging is in progress
             if (isDragging) {
                 // Tell the console what our vector components look like
@@ -109,7 +98,7 @@ $.ajax({
           });
 
         // Event listener for mouse up
-        $(document).on('mouseup', function() {
+        $(this).on('mouseup', function() {
             // Set the flag to false when mouse button is released
             if (isDragging){
                 cueBall.attr("fill", "white") 
@@ -118,8 +107,4 @@ $.ajax({
             isDragging = false;
             
         })
-    },
-    error: function(xhr, status, error) {
-        console.error("Failed to load SVG:", error);
-    }
 });

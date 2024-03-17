@@ -61,6 +61,7 @@ def deleteTables():
             os.remove('./' + file)
 
 
+
 # Define routes 
 routes = {
             '/': '../client/index.html',
@@ -119,18 +120,31 @@ class PoolServer( BaseHTTPRequestHandler ):
             we can just return to most recent state of game
             """
 
+            # Get latest game state from db
+            db = p.Database()
+            latestTable, thisPlayersTurn = db.latestGameState(gameId)
+
+
             # TODO: Check if game has been won/lost
+
+            # Get html file and embed table svg
+            # Read the HTML template file
+            with open('../client/game.html', 'r') as file:
+                gameHtml = file.read()
+
+            # Replace the placeholder with table SVG
+            tableSvg = latestTable.svg()
+                
+            response = gameHtml.format(svgContent=tableSvg)
 
             # Set headers
             self.send_response( 200 ); # OK
             self.send_header( "Content-type", "text/html" );
-            self.send_header( "Content-length", 0);
+            self.send_header( "Content-length", len(response));
             self.end_headers();
 
-            # Write content to screen 
-            self.wfile.write(bytes("Fetching game: %s" % gameId, "utf-8"))
-
-
+            # Write the HTML response with embedded SVG content
+            self.wfile.write(response.encode('utf-8'))
 
 
         # If the path doesn't match any routes, send back 404
@@ -143,6 +157,8 @@ class PoolServer( BaseHTTPRequestHandler ):
 
             # Write error message to screen
             self.wfile.write(bytes("404: %s not found" % self.path, "utf-8"));
+
+
 
     # Handle POST request
     def do_POST(self):
