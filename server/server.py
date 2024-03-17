@@ -64,7 +64,8 @@ def deleteTables():
 # Define routes 
 routes = {
             '/': '../client/index.html',
-            '/index.js': '../client/index.js'
+            '/index.js': '../client/index.js',
+            '/game.js': '../client/game.js'
         }
 
 staticFiles = ['../client/index.html', '../client/index.js']
@@ -118,6 +119,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             we can just return to most recent state of game
             """
 
+            # TODO: Check if game has been won/lost
 
             # Set headers
             self.send_response( 200 ); # OK
@@ -200,7 +202,7 @@ if __name__ == "__main__":
     httpd = HTTPServer(('0.0.0.0', 8080), PoolServer);
 
     # Let the console know the server is running at specified port
-    print( "Server listing in port: 8080 ");
+    print( "Server listing in port: 8080");
 
     # Run server indefinetely (Terminate by stopping terminal session)
     httpd.serve_forever();

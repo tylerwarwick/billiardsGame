@@ -714,11 +714,30 @@ class Database:
         
         # Query for most recent state of table
         query = """
-                
-
-
+                SELECT TABLEID, PLAYERID
+                FROM Shot
+                LEFT JOIN TableShot on Shot.SHOTID = TableShot.SHOTID
+                WHERE GAMEID = ? 
+                ORDER BY shot.SHOTID DESC, TABLEID DESC
+                LIMIT 1 
                 """
-        cur.execute("")
+
+        data = cur.execute(query, (gameId,)).fetchone()
+        
+        # Get latest table
+        latestTable = self.readTable(data[0])
+
+        # Need to find most recent player to shoot
+        mostRecentPlayerId = data[1]
+
+        # Want to find who's turn it is
+        thisPlayersTurn = cur.execute("""SELECT PLAYERNAME 
+                                         FROM Player 
+                                         WHERE GAMEID = ? AND PLAYERID != ?
+                                      """, (gameId, mostRecentPlayerId))
+        
+        # Return most recent table and who's turn it is
+        return latestTable, thisPlayersTurn
 
 
     # Close method
