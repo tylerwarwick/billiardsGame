@@ -80,6 +80,18 @@ class PoolServer( BaseHTTPRequestHandler ):
     - new shot
     - game page
     """
+    # TODO: Dynamically fetch and feed latest shot to client
+    """ 
+    Need to get most recent state of game, as well as who last shot
+    Then serve page with interactable cue with that table state (GET /game/id)
+
+    Then player will make post request for new shot (POST shoot)
+    and then we somehow (tbd) dynamically animate the screen (on POST success GET animation frames)
+
+    Once that finishes we are back to beginning. This way if the user refreshes,
+    we can just return to most recent state of game (No action required, hide animation frame leaving next shot page exposed)
+    """   
+
     def do_GET(self):
         # Parse url
         parsedPath = urlparse(self.path).path;
@@ -106,20 +118,10 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Close the file
             fp.close();
 
-           
+            
         elif parsedPath.startswith('/game/'):
             # Get game id from path (subject to change later)
             gameId = parsedPath.split('/')[-1]
-
-            # TODO: Dynamically fetch and feed latest shot to client
-            """ 
-            Need to get most recent state of game, as well as who last shot
-            Then serve page with interactable cue with that table state
-            Then player will make post request for new shot
-            and then we somehow (tbd) dynamically animate the screen.
-            Once that finishes we are back to beginning. This way if the user refreshes,
-            we can just return to most recent state of game
-            """
 
             # Get latest game state from db
             db = p.Database()
@@ -146,6 +148,22 @@ class PoolServer( BaseHTTPRequestHandler ):
 
             # Write the HTML response with embedded SVG content
             self.wfile.write(response.encode('utf-8'))
+
+        # Get the animation frames
+        elif parsedPath.startswith('/frames'):
+            # Need to get starting and ending time stamps
+
+
+
+
+
+
+            # Set headers
+            self.send_response( 200 ); # OK
+            self.send_header( "Content-type", "text/html" );
+            self.send_header( "Content-length", len(response));
+            self.end_headers(); 
+
 
 
         # If the path doesn't match any routes, send back 404
@@ -197,6 +215,7 @@ class PoolServer( BaseHTTPRequestHandler ):
 
             # Need to send gameId back to client for new game window
             response = str(newGame.gameID)
+
             # generate the headers
             self.send_response( 200 ); # OK
             self.send_header( "Content-type", "text/html" );
@@ -205,6 +224,11 @@ class PoolServer( BaseHTTPRequestHandler ):
         
             # Actually pass the id back
             self.wfile.write(bytes(response, "utf-8"))
+
+        elif path == '/shoot':
+            # Get table ID and velocity values from request
+            
+
 
         else:
             # generate 404 for POST requests that aren't any of the above
@@ -219,7 +243,7 @@ if __name__ == "__main__":
     httpd = HTTPServer(('0.0.0.0', 8080), PoolServer);
 
     # Let the console know the server is running at specified port
-    print( "Server listing in port: 8080 TEST");
+    print( "Server listing in port: 8080");
 
     # Run server indefinetely (Terminate by stopping terminal session)
     httpd.serve_forever();

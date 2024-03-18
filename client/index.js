@@ -19,9 +19,6 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: formData,
             success: function(response) {
-                console.log('New game created successfully');
-                console.log(parseInt(response))
-
                 // Move into game session
                 window.location.replace(`/game/${parseInt(response)}`)
             },
@@ -29,7 +26,7 @@ $(document).ready(function() {
                 console.error('Failed to create new game:', error);
 
                 // Handle error response from the server
-                alert("Something went wrong!")
+                alert("Something went wrong! Please try starting a game again")
             }
         });
     });

@@ -79,6 +79,8 @@ $(document).ready(function(){
             mouseY = event.clientY;
         })
 
+        //Need a vector temp to pull velocity values from when mouse is let go of
+        let deltaX, deltaY 
         $(this).on('mousemove', function(event) {
             // Check if dragging is in progress
             if (isDragging) {
@@ -86,10 +88,8 @@ $(document).ready(function(){
                 console.log('Dragging... from: ', mouseX, " ", mouseY);
                 console.log("to: ", event.clientX, "  ", event.clientY) 
 
-                const [deltaX, deltaY] = maxVector(mouseX, mouseY, event.clientX, event.clientY)
+                [deltaX, deltaY] = maxVector(mouseX, mouseY, event.clientX, event.clientY)
 
-                console.log("x displacement: ", event.clientX - mouseX)
-                console.log("Calc delta: ", deltaX)
                 // Can circle back with extra time to change mouseX and mouseY
                 // So no clipping occurs with vector and cue ball
                 makeVector(mouseX, mouseY, mouseX+deltaX, mouseY+deltaY)   
@@ -101,10 +101,19 @@ $(document).ready(function(){
         $(this).on('mouseup', function() {
             // Set the flag to false when mouse button is released
             if (isDragging){
+                // We'll make POST request first
+                // We have vector components already at our disposal
+                
+
+
+                // Reset colour of cue ball
                 cueBall.attr("fill", "white") 
+
+                // Get rid of the line again
                 removeVector()
             } 
             isDragging = false;
             
         })
+
 });
