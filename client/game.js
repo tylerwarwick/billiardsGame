@@ -114,7 +114,7 @@ $(document).ready(function(){
         })
 
         //Need a vector temp to pull velocity values from when mouse is let go of
-        let deltaX, deltaY 
+        let velocities
         $(this).on('mousemove', function(event) {
             // Check if dragging is in progress
             if (isDragging) {
@@ -122,7 +122,7 @@ $(document).ready(function(){
                 console.log('Dragging... from: ', mouseX, " ", mouseY);
                 console.log("to: ", event.clientX, "  ", event.clientY) 
 
-                [deltaX, deltaY] = maxVector(mouseX, mouseY, event.clientX, event.clientY)
+                const [deltaX, deltaY] = maxVector(mouseX, mouseY, event.clientX, event.clientY)
 
                 // Can circle back with extra time to change mouseX and mouseY
                 // So no clipping occurs with vector and cue ball
