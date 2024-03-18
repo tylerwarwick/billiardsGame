@@ -21,6 +21,40 @@ const maxVector = (x1, y1, x2, y2) => {
 
 }
 
+// Helper function for shoot post request
+const shoot = (xVel, yVel) => {
+    // Will need to refetch latest game state from gameID on server side
+    // Unless I can somehow maintain tableId somewhere
+    // We'll stick with the former for now
+
+
+
+    $.ajax({
+        url: '/shoot',
+        method: 'POST',
+        contentType: 'application/json',
+        data: {
+            xVel : xVel,
+            yVel : yVel
+        },
+        success: function(response) {
+            // Move into game session
+            window.location.replace(`/game/${parseInt(response)}`)
+        },
+        error: function(xhr, status, error) {
+            console.error('Failed to create new game:', error);
+
+            // Handle error response from the server
+            alert("Something went wrong! Please try starting a game again")
+        }
+    });
+}
+
+
+
+
+
+
 $(document).ready(function(){
         // Get svg div
         const svgContainer = $('#svgContainer')
