@@ -48,27 +48,23 @@ const shoot = (xVel, yVel) => {
     // Unless I can somehow maintain tableId somewhere
     // We'll stick with the former for now
 
-    const data = {
+    const JSONData = JSON.stringify(
+    {
         xVel : xVel,
         yVel : yVel
-    }
-
-    const length = len(data)
+    })
 
     $.ajax({
         url: '/shoot',
         method: 'POST',
         contentType: 'application/json',
-        data: data,
-        contentLength: length,
+        data: JSONData,
         success: function(response) {
             // On success, animate
             console.log("Worked")
-
         },
         error: function(xhr, status, error) {
             console.error('Failed to shoot:', error);
-
         }
     });
 }

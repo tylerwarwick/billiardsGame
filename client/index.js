@@ -16,7 +16,7 @@ $(document).ready(function() {
         $.ajax({
             url: '/newGame',
             method: 'POST',
-            contentType: 'application/json',
+            contentType: 'application/x-www-form-urlencoded',
             data: formData,
             success: function(response) {
                 // Move into game session

@@ -233,8 +233,10 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Get velocity values from request
             data = parse_qs(body.decode('utf-8')); 
 
-            xVel = data["xVel"]
-            yVel = data["yVel"]
+            print(data)            
+
+            xVel = data.get("xVel", [""])[0]
+            yVel = data.get("yVel", [""])[0]
 
             print(xVel, " ", yVel)
 
