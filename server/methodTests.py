@@ -51,8 +51,6 @@ game = p.Game(None, "Game", "Tyler", "Erin")
 game.shoot("Game", "Erin", table, 0, 0)
 reconstructedTable, playerWhoWentLast = db.latestGameState(1)
 
-print(table)
-print(reconstructedTable)
 
 
 

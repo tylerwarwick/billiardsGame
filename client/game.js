@@ -3,6 +3,10 @@ const length = (x, y) => {
     return Math.sqrt((x*x) + (y*y))
 }
 
+// Declare consts if we choose to change later
+const MAXVECTORLENGTH = 200
+const MAXSPEED = 10000 // (mm/s)
+
 
 // Take angle and output vector of fixed length
 const maxVector = (x1, y1, x2, y2) => {
@@ -12,13 +16,30 @@ const maxVector = (x1, y1, x2, y2) => {
     if (len == 0) return [0, 0]
 
     // If within allotted range, return unchanged offset
-    if (len < 200){
+    if (len < MAXVECTORLENGTH){
         return [x2-x1, y2-y1]
     }
 
     // Otherwise shorten magnitude while maintaining angle (unit vector) 
-    return [200*(x2-x1)/len, 200*(y2-y1)/len]
+    return [MAXVECTORLENGTH*(x2-x1)/len, MAXVECTORLENGTH*(y2-y1)/len]
 
+}
+
+// Need to convert viewport grid vector to velocities for our shoot function server side
+const getUsableVelocities = (xVec, yVec) => {
+    // Get magnitude for vector components
+    vecMagnitude = length(xVec, yVec)
+
+    // Need unit vector components as well
+    xUnit = xVec / vecMagnitude
+    yUnit = yVec / vecMagnitude
+
+    // Now get overall speed of velocity applied to ball
+    // vecMagnitude over max vector length gives us our percentage of max speed
+    speed = (vecMagnitude / MAXVECTORLENGTH) * MAXSPEED
+
+    // Return x and y components of velocity
+    return xUnit * speed, yUnit * speed
 }
 
 // Helper function for shoot post request
@@ -27,30 +48,30 @@ const shoot = (xVel, yVel) => {
     // Unless I can somehow maintain tableId somewhere
     // We'll stick with the former for now
 
+    const data = {
+        xVel : xVel,
+        yVel : yVel
+    }
 
+    const length = len(data)
 
     $.ajax({
         url: '/shoot',
         method: 'POST',
         contentType: 'application/json',
-        data: {
-            xVel : xVel,
-            yVel : yVel
-        },
+        data: data,
+        contentLength: length,
         success: function(response) {
-            // Move into game session
-            window.location.replace(`/game/${parseInt(response)}`)
+            // On success, animate
+            console.log("Worked")
+
         },
         error: function(xhr, status, error) {
-            console.error('Failed to create new game:', error);
+            console.error('Failed to shoot:', error);
 
-            // Handle error response from the server
-            alert("Something went wrong! Please try starting a game again")
         }
     });
 }
-
-
 
 
 
@@ -114,15 +135,16 @@ $(document).ready(function(){
         })
 
         //Need a vector temp to pull velocity values from when mouse is let go of
-        let velocities
+        let xVec, yVec
         $(this).on('mousemove', function(event) {
             // Check if dragging is in progress
             if (isDragging) {
-                // Tell the console what our vector components look like
-                console.log('Dragging... from: ', mouseX, " ", mouseY);
-                console.log("to: ", event.clientX, "  ", event.clientY) 
-
+                // Get normalized vector
                 const [deltaX, deltaY] = maxVector(mouseX, mouseY, event.clientX, event.clientY)
+                
+                // Track vector for use when mouse is lifted
+                xVec = deltaX
+                yVec = deltaY 
 
                 // Can circle back with extra time to change mouseX and mouseY
                 // So no clipping occurs with vector and cue ball
@@ -137,8 +159,7 @@ $(document).ready(function(){
             if (isDragging){
                 // We'll make POST request first
                 // We have vector components already at our disposal
-                
-
+                shoot(getUsableVelocities(xVec, yVec))
 
                 // Reset colour of cue ball
                 cueBall.attr("fill", "white") 

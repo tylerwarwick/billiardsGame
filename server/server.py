@@ -225,10 +225,20 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Actually pass the id back
             self.wfile.write(bytes(response, "utf-8"))
 
-        elif path.startswith('/game/') and path.endswith('/shoot'):
-            # Get table ID and velocity values from request
+        elif path == '/shoot':
+            # Get data from request
+            content_length = int(self.headers['Content-Length']);
+            body = self.rfile.read(content_length);
 
+            # Get velocity values from request
+            data = parse_qs(body.decode('utf-8')); 
 
+            xVel = data["xVel"]
+            yVel = data["yVel"]
+
+            print(xVel, " ", yVel)
+
+            response = "Yes"
             # generate the headers
             self.send_response( 200 ); # OK
             self.send_header( "Content-type", "text/html" );
