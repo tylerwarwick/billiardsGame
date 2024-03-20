@@ -39,7 +39,7 @@ const getUsableVelocities = (xVec, yVec) => {
     speed = (vecMagnitude / MAXVECTORLENGTH) * MAXSPEED
 
     // Return x and y components of velocity
-    return xUnit * speed, yUnit * speed
+    return [xUnit * speed, yUnit * speed]
 }
 
 // Helper function for shoot post request
@@ -51,7 +51,7 @@ const shoot = (xVel, yVel) => {
     const JSONData = JSON.stringify(
     {
         xVel : xVel,
-        yVel : yVel
+        yVel : yVel 
     })
 
     $.ajax({
@@ -155,7 +155,8 @@ $(document).ready(function(){
             if (isDragging){
                 // We'll make POST request first
                 // We have vector components already at our disposal
-                shoot(getUsableVelocities(xVec, yVec))
+                const [xVel, yVel] = getUsableVelocities(xVec, yVec)
+                shoot(xVel, yVel)
 
                 // Reset colour of cue ball
                 cueBall.attr("fill", "white") 

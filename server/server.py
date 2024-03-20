@@ -1,3 +1,4 @@
+import json
 import os # Check if file exists in directory
 import re # Need regular expressions
 import sys; # used to get argv
@@ -231,12 +232,11 @@ class PoolServer( BaseHTTPRequestHandler ):
             body = self.rfile.read(content_length);
 
             # Get velocity values from request
-            data = parse_qs(body.decode('utf-8')); 
+            data = json.loads(body.decode("utf-8")); 
 
-            print(data)            
-
-            xVel = data.get("xVel", [""])[0]
-            yVel = data.get("yVel", [""])[0]
+            print(data)
+            xVel = data["xVel"]
+            yVel = data["yVel"]
 
             print(xVel, " ", yVel)
 
@@ -259,10 +259,10 @@ class PoolServer( BaseHTTPRequestHandler ):
 # Main piece to instantiate server on port parsed from argv
 if __name__ == "__main__":
     # Create server on port passed by argv
-    httpd = HTTPServer(('0.0.0.0', 8080), PoolServer);
+    httpd = HTTPServer(('0.0.0.0', 50124), PoolServer);
 
     # Let the console know the server is running at specified port
-    print( "Server listing in port: 8080");
+    print( "Server listing in port: 50124");
 
     # Run server indefinetely (Terminate by stopping terminal session)
     httpd.serve_forever();
