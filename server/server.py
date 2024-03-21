@@ -8,7 +8,9 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs, urlparse, parse_qsl;
 import random
 
-
+# Need to make function to format table svgs into format we can animate
+def animationSvg(table):
+    return
 
 def addStillBall(table, num, x, y):
     ball = p.StillBall(num, p.Coordinate(x, y))
@@ -255,10 +257,10 @@ class PoolServer( BaseHTTPRequestHandler ):
             game = p.Game(gameId)
 
             # Shoot with velocities from client
-            game.shoot("tbd", thisPlayersTurn, latestTable, xVel, yVel)
+            shotId = game.shoot("tbd", thisPlayersTurn, latestTable, xVel, yVel)
 
             # Get all the frames SVGs and return to client
-            
+            # Need to fetch all frames associated with this shot we just created
 
 
 

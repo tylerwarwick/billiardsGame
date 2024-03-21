@@ -851,7 +851,7 @@ class Game:
             # Check if we are done iterating
             if (table is None):
                 break 
-
+            
             # Get time elapsed and number of frames
             frames = m.floor((table.time - startTime) / FRAME_INTERVAL)
 
@@ -871,6 +871,9 @@ class Game:
 
         # Commit and close
         db.close()
+
+        # Return shotId to make it easiest on server side
+        return shotId
 
     
 
