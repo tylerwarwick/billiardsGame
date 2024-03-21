@@ -149,9 +149,10 @@ class Hole( phylib.phylib_object ):
         """
 
         # this creates a generic phylib_object
+        # Need to make num 0 instead of None
         phylib.phylib_object.__init__( self, 
                                        phylib.PHYLIB_HOLE, 
-                                       None, 
+                                       0, 
                                        pos, 
                                        None, 
                                        None, 
@@ -182,9 +183,10 @@ class HCushion( phylib.phylib_object ):
         """
 
         # this creates a generic phylib_object
+        # Need to make num 0 instead of None
         phylib.phylib_object.__init__( self, 
                                        phylib.PHYLIB_HCUSHION, 
-                                       None, 
+                                       0, 
                                        None, 
                                        None, 
                                        None, 
@@ -216,9 +218,10 @@ class VCushion( phylib.phylib_object ):
         """
 
         # this creates a generic phylib_object
+        # Need to make num 0 instead of None
         phylib.phylib_object.__init__( self, 
                                        phylib.PHYLIB_VCUSHION, 
-                                       None, 
+                                       0, 
                                        None, 
                                        None, 
                                        None, 
