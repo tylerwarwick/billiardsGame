@@ -872,9 +872,7 @@ class Game:
         # Commit and close
         db.close()
 
-
-
-
+    
 
 
 

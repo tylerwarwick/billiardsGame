@@ -48,8 +48,13 @@ const shoot = (xVel, yVel) => {
     // Unless I can somehow maintain tableId somewhere
     // We'll stick with the former for now
 
+    // Get gameID from address
+    const url = (window.location.pathname).split('/')
+    const gameId = url[url.indexOf("game") + 1]    
+
     const JSONData = JSON.stringify(
     {
+        gameId : gameId,
         xVel : xVel,
         yVel : yVel 
     })
@@ -156,7 +161,9 @@ $(document).ready(function(){
                 // We'll make POST request first
                 // We have vector components already at our disposal
                 const [xVel, yVel] = getUsableVelocities(xVec, yVec)
-                shoot(xVel, yVel)
+
+                // Invert values to put in context of pool table
+                shoot(-xVel, -yVel)
 
                 // Reset colour of cue ball
                 cueBall.attr("fill", "white") 

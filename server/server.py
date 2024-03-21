@@ -127,6 +127,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Get latest game state from db
             db = p.Database()
             latestTable, thisPlayersTurn = db.latestGameState(gameId)
+            db.close()
 
 
             # TODO: Check if game has been won/lost
@@ -226,6 +227,11 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Actually pass the id back
             self.wfile.write(bytes(response, "utf-8"))
 
+            """
+            When the client calls shoots I am going to pass back the required in between frames.
+            Rather than passing an id or timestamps for which they can then make a GET request with.
+            I think this will make more sense
+            """
         elif path == '/shoot':
             # Get data from request
             content_length = int(self.headers['Content-Length']);
@@ -234,20 +240,36 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Get velocity values from request
             data = json.loads(body.decode("utf-8")); 
 
-            print(data)
             xVel = data["xVel"]
             yVel = data["yVel"]
 
-            print(xVel, " ", yVel)
+            # Also need to parse gameID from request
+            gameId = data["gameId"]
 
-            response = "Yes"
+            # Fetch latest game state
+            db = p.Database()
+            latestTable, thisPlayersTurn = db.latestGameState(gameId) 
+            db.close()
+
+            # Get game object
+            game = p.Game(gameId)
+
+            # Shoot with velocities from client
+            game.shoot("tbd", thisPlayersTurn, latestTable, xVel, yVel)
+
+            # Get all the frames SVGs and return to client
+            
+
+
+
+
             # generate the headers
             self.send_response( 200 ); # OK
             self.send_header( "Content-type", "text/html" );
-            self.send_header( "Content-length", len(response));
+            self.send_header( "Content-length", 3);
             self.end_headers();
          
-
+            self.wfile.write(bytes("Yes", "utf-8"))
 
         else:
             # generate 404 for POST requests that aren't any of the above
