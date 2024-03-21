@@ -332,12 +332,13 @@ class Table( phylib.phylib_table ):
         return result;
 
     # SVG method
-    def svg( self ):
+    def svg(self, header):
         #Return svg representation
         returnString = "";
 
         #Append header
-        returnString += HEADER
+        if header:
+            returnString += HEADER
 
         #Append svg for each object
         for object in self:
@@ -345,7 +346,8 @@ class Table( phylib.phylib_table ):
                 returnString += object.svg()
 
         #Append footer
-        returnString += FOOTER
+        if header:
+            returnString += FOOTER
 
         #Return final SVG string
         return returnString
@@ -751,6 +753,21 @@ class Database:
         # Return most recent table and who's turn it is
         return latestTable, thisPlayersTurn
 
+    def shotFrames(self, shotId):
+        query = """
+                SELECT TABLEID
+                FROM TableShot
+                WHERE SHOTID = ?
+                ORDER BY TABLEID ASC
+                """
+        
+        # Get cursor
+        cur = self.conn.cursor()
+
+        data = cur.execute(query, (shotId,)).fetchall()
+
+        # Return arrays of table
+        return data
 
     # Close method
     def close(self):
