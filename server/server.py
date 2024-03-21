@@ -1,7 +1,6 @@
 import json
 import os # Check if file exists in directory
 import re # Need regular expressions
-import sys; # used to get argv
 import math as m
 import Physics as p
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -10,6 +9,8 @@ import random
 
 # Need to make function to format table svgs into format we can animate
 def animationSvg(table):
+    header = """<span id="animate"><svg viewBox="-25 -25 1400 2750"><g >"""
+    footer = "</g></svg></span>"
     return
 
 def addStillBall(table, num, x, y):
