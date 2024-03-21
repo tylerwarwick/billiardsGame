@@ -792,7 +792,8 @@ class Game:
             self.gameID = gameID 
 
             # Get game data from db
-            [gName, p1, p2] = db.getGame(gameID+1)
+            # Ridding ourselves of arbitrary ID shifting
+            [gName, p1, p2] = db.getGame(gameID)
 
             # Populate attributes
             self.gameName = gName
