@@ -8,10 +8,17 @@ from urllib.parse import parse_qs, urlparse, parse_qsl;
 import random
 
 # Need to make function to format table svgs into format we can animate
-def animationSvg(table):
-    header = """<span id="animate"><svg viewBox="-25 -25 1400 2750"><g >"""
-    footer = "</g></svg></span>"
-    return
+def animationSvg(tableIds):
+    str = ""
+
+    db = p.Database() 
+
+    for tableId in tableIds:
+        str = str + "<g>" + db.readTable(tableId).svg(False) + "</g>"   
+
+    db.close() 
+
+    return str
 
 def addStillBall(table, num, x, y):
     ball = p.StillBall(num, p.Coordinate(x, y))
@@ -233,7 +240,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             """
             When the client calls shoots I am going to pass back the required in between frames.
             Rather than passing an id or timestamps for which they can then make a GET request with.
-            I think this will make more sense
+            I think this will make more sense. UPDATE: we are passing back interval of ids in which they can make get requests.
             """
         elif path == '/shoot':
             # Get data from request
@@ -243,16 +250,16 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Get velocity values from request
             data = json.loads(body.decode("utf-8")); 
 
-            xVel = data["xVel"]
-            yVel = data["yVel"]
+            xVel = float(data["xVel"])
+            yVel = float(data["yVel"])
 
             # Also need to parse gameID from request
-            gameId = data["gameId"]
+            gameId = int(data["gameId"])
 
             # Fetch latest game state
             db = p.Database()
             latestTable, thisPlayersTurn = db.latestGameState(gameId) 
-            db.close()
+            
 
             # Get game object
             game = p.Game(gameId)
@@ -260,19 +267,21 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Shoot with velocities from client
             shotId = game.shoot("tbd", thisPlayersTurn, latestTable, xVel, yVel)
 
-            # Get all the frames SVGs and return to client
-            # Need to fetch all frames associated with this shot we just created
+            # Return beginning and ending tableIds to client for animation
+            interval = db.shotInterval(shotId)
+            response = str(interval[0]) + "-" + str(interval[1])
 
-
+            # Close db
+            db.close()
 
 
             # generate the headers
             self.send_response( 200 ); # OK
             self.send_header( "Content-type", "text/html" );
-            self.send_header( "Content-length", 3);
+            self.send_header( "Content-length", len(response));
             self.end_headers();
          
-            self.wfile.write(bytes("Yes", "utf-8"))
+            self.wfile.write(bytes(response, "utf-8"))
 
         else:
             # generate 404 for POST requests that aren't any of the above

@@ -768,9 +768,31 @@ class Database:
         cur = self.conn.cursor()
 
         data = cur.execute(query, (shotId,)).fetchall()
+        cur.close()
 
         # Return arrays of table
+        return [tableId[0] for tableId in data] 
+
+    def shotInterval(self, shotId):
+        query = """
+                SELECT 
+                    (SELECT TABLEID 
+                    FROM TableShot 
+                    WHERE SHOTID = ?
+                    ORDER BY TABLEID ASC 
+                    LIMIT 1) AS lowest_tableId,
+                    (SELECT TABLEID 
+                    FROM TableShot 
+                    WHERE SHOTID = ? 
+                    ORDER BY TABLEID DESC 
+                    LIMIT 1) AS highest_tableId
+                """
+        
+        cur = self.conn.cursor()
+        data = cur.execute(query, (shotId, shotId)).fetchone()
+
         return data
+
 
     # Close method
     def close(self):
