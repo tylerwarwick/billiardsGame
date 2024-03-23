@@ -148,7 +148,7 @@ class PoolServer( BaseHTTPRequestHandler ):
                 gameHtml = file.read()
 
             # Replace the placeholder with table SVG
-            tableSvg = latestTable.svg()
+            tableSvg = latestTable.svg(False)
                 
             response = gameHtml.format(svgContent=tableSvg)
 

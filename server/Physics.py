@@ -24,8 +24,7 @@ HEADER = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg height="70vh" viewBox="-25 -25 1400 2750"
 xmlns="http://www.w3.org/2000/svg"
-xmlns:xlink="http://www.w3.org/1999/xlink">
-<rect width="1350" height="2700" x="0" y="0" fill="#C0D0C0" />"""
+xmlns:xlink="http://www.w3.org/1999/xlink">"""
 
 FOOTER = """</svg>\n"""
 
@@ -337,7 +336,7 @@ class Table( phylib.phylib_table ):
     # SVG method
     def svg(self, header=True):
         #Return svg representation
-        returnString = "";
+        returnString = """<rect width="1350" height="2700" x="0" y="0" fill="#C0D0C0" />""";
 
         #Append header
         if header:

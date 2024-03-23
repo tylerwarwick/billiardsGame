@@ -130,6 +130,9 @@ const animate = (svg) => {
     const frames = $('.frame');
     const frameCount = frames.length
 
+    // I want to plug last frame of svg post into interactiveGame div
+    lastFrameContent = frames.eq(frameCount-1).html()
+    console.log(lastFrameContent)
     
     function showNextFrame(index) {
         // Hide the current frame (if any)
@@ -166,7 +169,9 @@ const animate = (svg) => {
             // Need special case for very last frame
             if (index === frameCount - 1) {
                 // Put last frame into interactive div
-                $('#interactiveGame').empty().html("NEXT SHOT");
+                $('#insertFrameHere').empty().html(lastFrameContent);
+                attachEventHandlers()
+                toggleAnimationOn(false)
             }
         }
     }
@@ -175,8 +180,6 @@ const animate = (svg) => {
     // Start the animation by showing the first frame
     showNextFrame(0);
 
-    // Go back to interactive display
-    //toggleAnimationOn(false)
 }    
 
 
@@ -225,104 +228,96 @@ const animate = (start, end) => {
 
 */
 
-// Main interaction Jquery block
-$(document).ready(function(){
-        // Get svg div
-        const svgContainer = $('#interactiveGame')
+const attachEventHandlers = () => {
+     // Get svg div
+     const svgContainer = $('#interactiveGame')
 
 
-        // PRE SHOT LOGIC
-        // Now we can interact with the SVG elements
-        // Let's get cueBall element so we can work with it
-        const cueBall = svgContainer.find("#cueBall")
+     // PRE SHOT LOGIC
+     // Now we can interact with the SVG elements
+     // Let's get cueBall element so we can work with it
+     cueBall = svgContainer.find("#cueBall")
 
 
-        // Define hover behaviour
-        // When hovering, indicate as such
-        cueBall.on("mouseenter", function() {
-            $(this).attr("fill", "#E0E0E0")
-        })
-        
-        cueBall.on('mouseout', function() {
-            if (!isDragging) $(this).attr("fill", "white")
-        })
+     // Define hover behaviour
+     // When hovering, indicate as such
+     cueBall.on("mouseenter", function() {
+         $(this).attr("fill", "#E0E0E0")
+     })
+     
+     cueBall.on('mouseout', function() {
+         if (!isDragging) $(this).attr("fill", "white")
+     })
 
-        // Gonna define line creator function here
-        const vector = $("#vector")
-        function makeVector(x1, y1, x2, y2) {
-            vector.removeClass("hidden")
-            vector.attr("x1", x1)
-            vector.attr("y1", y1)
-            vector.attr("x2", x2)
-            vector.attr("y2", y2)
-        }
-
-
-        function removeVector(){
-            vector.addClass("hidden")
-        }
-
-        // Now what happens when we click on it
-        let isDragging = false;
-        let mouseX, mouseY
-        cueBall.on('mousedown', function(event) {
-            isDragging = true
-
-            // Let user know they are contacting it:
-            $(this).attr("fill", "#E0E0E0")
-
-            // Get the cursor position relative to the viewport
-            mouseX = event.clientX;
-            mouseY = event.clientY;
-        })
-
-        //Need a vector temp to pull velocity values from when mouse is let go of
-        let xVec, yVec
-        $(this).on('mousemove', function(event) {
-            // Check if dragging is in progress
-            if (isDragging) {
-                // Get normalized vector
-                const [deltaX, deltaY] = maxVector(mouseX, mouseY, event.clientX, event.clientY)
-                
-                // Track vector for use when mouse is lifted
-                xVec = deltaX
-                yVec = deltaY 
-
-                // Can circle back with extra time to change mouseX and mouseY
-                // So no clipping occurs with vector and cue ball
-                makeVector(mouseX, mouseY, mouseX+deltaX, mouseY+deltaY)   
-            }
-
-          });
-
-        // Event listener for mouse up
-        $(this).on('mouseup', function() {
-            // Set the flag to false when mouse button is released
-            if (isDragging){
-                // We'll make POST request first
-                // We have vector components already at our disposal
-                const [xVel, yVel] = getUsableVelocities(xVec, yVec)
-
-                // Invert values to put in context of pool table
-                shoot(-xVel, -yVel)
-
-                // Reset colour of cue ball
-                cueBall.attr("fill", "white") 
-
-                // Get rid of the line again
-                removeVector()
-            } 
-            isDragging = false;
-            
-        })
+     // Gonna define line creator function here
+     const vector = $("#vector")
+     function makeVector(x1, y1, x2, y2) {
+         vector.removeClass("hidden")
+         vector.attr("x1", x1)
+         vector.attr("y1", y1)
+         vector.attr("x2", x2)
+         vector.attr("y2", y2)
+     }
 
 
-        // POST SHOT (ANIMATION) LOGIC
-        
+     function removeVector(){
+         vector.addClass("hidden")
+     }
 
+     // Now what happens when we click on it
+     let isDragging = false;
+     let mouseX, mouseY
+     cueBall.on('mousedown', function(event) {
+         isDragging = true
 
+         // Let user know they are contacting it:
+         $(this).attr("fill", "#E0E0E0")
 
+         // Get the cursor position relative to the viewport
+         mouseX = event.clientX;
+         mouseY = event.clientY;
+     })
 
+     //Need a vector temp to pull velocity values from when mouse is let go of
+     let xVec, yVec
+     $(document).on('mousemove', function(event) {
+         // Check if dragging is in progress
+         if (isDragging) {
+             // Get normalized vector
+             const [deltaX, deltaY] = maxVector(mouseX, mouseY, event.clientX, event.clientY)
+             
+             // Track vector for use when mouse is lifted
+             xVec = deltaX
+             yVec = deltaY 
 
+             // Can circle back with extra time to change mouseX and mouseY
+             // So no clipping occurs with vector and cue ball
+             makeVector(mouseX, mouseY, mouseX+deltaX, mouseY+deltaY)   
+         }
 
-});
+       });
+
+     // Event listener for mouse up
+     $(document).on('mouseup', function() {
+         // Set the flag to false when mouse button is released
+         if (isDragging){
+             // We'll make POST request first
+             // We have vector components already at our disposal
+             const [xVel, yVel] = getUsableVelocities(xVec, yVec)
+
+             // Invert values to put in context of pool table
+             shoot(-xVel, -yVel)
+
+             // Reset colour of cue ball
+             cueBall.attr("fill", "white") 
+
+             // Get rid of the line again
+             removeVector()
+         } 
+         isDragging = false;
+         
+     })
+
+}
+
+$(document).ready(attachEventHandlers());
