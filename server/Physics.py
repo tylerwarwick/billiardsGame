@@ -335,7 +335,7 @@ class Table( phylib.phylib_table ):
         return result;
 
     # SVG method
-    def svg(self, header):
+    def svg(self, header=True):
         #Return svg representation
         returnString = "";
 
@@ -579,6 +579,9 @@ class Database:
         # Get newly created tableId
         tableId = cur.fetchone()[0]
 
+        # We will optimize by maintaining a list of queries and doing excecute many
+        queries = []
+
         # Insert balls
         for item in table:
             # Only do something if it's ball
@@ -606,13 +609,13 @@ class Database:
                     velY = ball.vel.y
 
                 # Put ball info into ball table
+                queries.append(f"INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES ({ball.number}, {ball.pos.x}, {ball.pos.y}, {velX}, {velY}) RETURNING BALLID;")
                 cur.execute("INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES (?, ?, ?, ?, ?) RETURNING BALLID;", (ball.number,
                                                                                                                            ball.pos.x,
                                                                                                                            ball.pos.y,
                                                                                                                            velX,
                                                                                                                            velY))
 
-                # Get primary ID of new ball
                 ballId = cur.fetchone()[0]
 
                 # Put ball into BallTable
@@ -846,6 +849,7 @@ class Game:
             
             raise TypeError
 
+    # Update, we will create svgs as we create table frames to multiple/redudant trips to DB
     def shoot(self, gameName, playerName, table, xvel, yvel):
         # If table is None, we can't do anything
         if (table is None):
@@ -898,6 +902,9 @@ class Game:
             # Get time elapsed and number of frames
             frames = m.floor((table.time - startTime) / FRAME_INTERVAL)
 
+            # Tack on svg header
+            svg = HEADER 
+
             # Make a table for each frame in this segment of time
             for i in range(0, frames+1):
                 # Get new table with roll applied
@@ -909,14 +916,21 @@ class Game:
                 # Write this table to db
                 newTableId = db.writeTable(newTable)
 
+                # Tack svg frame onto reel
+                svg = svg +  "<g id='frame' class='hidden' >" + newTable.svg(False) + "</g>\n"
+
                 # Also record it in tableshot table
                 db.tableShot(newTableId, shotId)
 
         # Commit and close
         db.close()
 
+        # Tack on footer
+        svg = svg + FOOTER
+
         # Return shotId to make it easiest on server side
-        return shotId
+        # Update: return massive svg with frames as well
+        return shotId, svg
 
     
 

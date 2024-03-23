@@ -148,7 +148,7 @@ class PoolServer( BaseHTTPRequestHandler ):
                 gameHtml = file.read()
 
             # Replace the placeholder with table SVG
-            tableSvg = latestTable.svg(True)
+            tableSvg = latestTable.svg()
                 
             response = gameHtml.format(svgContent=tableSvg)
 
@@ -162,21 +162,23 @@ class PoolServer( BaseHTTPRequestHandler ):
             self.wfile.write(response.encode('utf-8'))
 
         # Get the animation frames
-        elif parsedPath.startswith('/frames'):
-            # Need to get starting and ending time stamps
-
-
-
-
-
-
+        # May come back and update db to indicate that we've seen this frame or something to that affect
+        elif parsedPath.startswith('/table'):
+            # Get tableId 
+            tableId = parsedPath.split('/')[-1]
+            print(tableId) 
+            
+            db = p.Database()
+            response = db.readTable(tableId).svg()
+            db.close()
+            
             # Set headers
             self.send_response( 200 ); # OK
             self.send_header( "Content-type", "text/html" );
             self.send_header( "Content-length", len(response));
             self.end_headers(); 
 
-
+            self.wfile.write(response.encode("utf-8"))
 
         # If the path doesn't match any routes, send back 404
         else:
@@ -211,7 +213,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             
             # Make a new game with game class
             # Game is automatically written to db with init
-            newGame = p.Game(None, "Game1", p1, p2)
+            newGame = p.Game(None, "tbd", p1, p2)
 
             # Make brand new table with break setup
             table = newTable()
@@ -265,11 +267,12 @@ class PoolServer( BaseHTTPRequestHandler ):
             game = p.Game(gameId)
 
             # Shoot with velocities from client
-            shotId = game.shoot("tbd", thisPlayersTurn, latestTable, xVel, yVel)
+            shotId, svg = game.shoot("tbd", thisPlayersTurn, latestTable, xVel, yVel)
 
             # Return beginning and ending tableIds to client for animation
             interval = db.shotInterval(shotId)
-            response = str(interval[0]) + "-" + str(interval[1])
+            #response = str(interval[0]) + "-" + str(interval[1])
+            response = svg
 
             # Close db
             db.close()

@@ -1,12 +1,21 @@
+// Need to get organized before this one JS file becomes massive and messy
+
+// CONSTANTS
+const MAXVECTORLENGTH = 200
+const MAXSPEED = 10000 // (mm/s)
+
+
+// STATE ElEMENTS
+let shotInterval = {
+    start:  null,
+    end: null,
+}
+
+// MATH FUNCTIONS
 // Define function that determines the max length of vector on screen
 const length = (x, y) => {
     return Math.sqrt((x*x) + (y*y))
 }
-
-// Declare consts if we choose to change later
-const MAXVECTORLENGTH = 200
-const MAXSPEED = 10000 // (mm/s)
-
 
 // Take angle and output vector of fixed length
 const maxVector = (x1, y1, x2, y2) => {
@@ -42,7 +51,8 @@ const getUsableVelocities = (xVec, yVec) => {
     return [xUnit * speed, yUnit * speed]
 }
 
-// Helper function for shoot post request
+// REQUESTS
+// Shoot POST request
 const shoot = (xVel, yVel) => {
     // Will need to refetch latest game state from gameID on server side
     // Unless I can somehow maintain tableId somewhere
@@ -66,7 +76,10 @@ const shoot = (xVel, yVel) => {
         data: JSONData,
         success: function(response) {
             // On success, animate
-            console.log("Worked")
+            //stringArr = response.split('-')
+            //console.log(parseInt(stringArr[0]))
+            //animate(parseInt(stringArr[0]), parseInt(stringArr[1]))
+            animate(response)
         },
         error: function(xhr, status, error) {
             console.error('Failed to shoot:', error);
@@ -75,15 +88,135 @@ const shoot = (xVel, yVel) => {
 }
 
 
+const getFrame = (tableId) => {
+    // Need to wrap as promise
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `/table/${tableId}`,
+            method: 'GET',
+            contentType: 'application/json',
+            success: (response) => {
+                return resolve(response)
+            },
+            error: (response) => {
+                reject(response)
+            }
+        })
+    }) 
+}
 
 
+const toggleAnimationOn = (bool) => {
+    gameDiv = $('#interactiveGame')
+    animationDiv = $('#animation')
+
+    if (bool){
+        gameDiv.addClass("hidden")
+        animationDiv.removeClass("hidden")
+    }
+    else {
+        gameDiv.removeClass("hidden")
+        animationDiv.addClass("hidden")
+        animationDiv.empty()
+    }
+}
+
+const animate = (svg) => {
+    // Put svg into animation div
+    $('#animation').html(svg)
+
+    toggleAnimationOn(true)
+
+
+    // Get all the <g> elements with the class "frame"
+    const frames = document.querySelectorAll('.frame');
+
+    // Function to show each frame for 40ms and then hide it
+    function showNextFrame(index) {
+        // Hide the current frame (if any)
+        if (index > 0) {
+            frames[index - 1].addClass('hidden');
+        }
+        
+        // Show the next frame
+        if (index < frames.length) {
+            frames[index].removeClass('hidden');
+            setTimeout(() => {
+                showNextFrame(index + 1); // Show the next frame after 40ms
+            }, 40);
+
+            //Need special case for very last frame
+            if (index == frames.length - 1){
+                //Put last frame into interactive div
+                $('#interactiveGame').empty().html("NEXT SHOT")
+            }
+        }
+    }
+
+    // Start the animation by showing the first frame
+    showNextFrame(0);
+
+    // Go back to interactive display
+    toggleAnimationOn(false)
+}
+
+
+/*
+const animate = (start, end) => {
+    // Need to request table from server over interval of IDs and cast to screen
+    let i = start
+    
+    toggleAnimationOn(true)    
+    
+    while (i<= end){
+        getFrame(i)
+        .then((response) => {
+            $('#animation').empty()
+            setTimeout(() => { $('#animation').html(response)}, 40)
+            
+        })
+        .catch((error) => {
+            console.log("Broken frame retrieval")
+        })
+        i++
+    }   
+    
+    $('#interactiveGame').empty()
+    $('#interactiveGame').html()
+    
+
+    const animateFrame = () => {
+        if (i <= end) {
+            getFrame(i)
+                .then((response) => {
+                    $('#animation').html(response);
+                    i++;
+                    requestAnimationFrame(animateFrame); // Request the next frame
+                })
+                .catch((error) => {
+                    console.log("Broken frame retrieval");
+                });
+        } else {
+            toggleAnimationOn(false); // Animation complete
+        }
+    };
+
+    animateFrame(); // Start the animation loop
+}
+
+*/
+
+// Main interaction Jquery block
 $(document).ready(function(){
         // Get svg div
-        const svgContainer = $('#svgContainer')
+        const svgContainer = $('#interactiveGame')
 
+
+        // PRE SHOT LOGIC
         // Now we can interact with the SVG elements
         // Let's get cueBall element so we can work with it
         const cueBall = svgContainer.find("#cueBall")
+
 
         // Define hover behaviour
         // When hovering, indicate as such
@@ -94,17 +227,6 @@ $(document).ready(function(){
         cueBall.on('mouseout', function() {
             if (!isDragging) $(this).attr("fill", "white")
         })
-
-        //Need to normlize coords in context of svg table
-        // Get the position of the SVG container relative to the viewport
-        const rect = svgContainer[0].getBoundingClientRect()
-
-
-        // Get the dimensions of the window
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-
-        
 
         // Gonna define line creator function here
         const vector = $("#vector")
@@ -174,5 +296,14 @@ $(document).ready(function(){
             isDragging = false;
             
         })
+
+
+        // POST SHOT (ANIMATION) LOGIC
+        
+
+
+
+
+
 
 });
