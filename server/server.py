@@ -147,8 +147,6 @@ class PoolServer( BaseHTTPRequestHandler ):
             latestTable, thisPlayersTurn = db.latestGameState(gameId)
             db.close()
 
-            print("Table from latestTable: ")
-            print(latestTable)
             # I need both players name
             game = p.Game(gameId)
 
@@ -161,16 +159,13 @@ class PoolServer( BaseHTTPRequestHandler ):
 
             # Replace the placeholder with table SVG
             tableSvg = latestTable.svg(False)
-                
+
             response = gameHtml.format(svgContent=tableSvg, p1Name=game.player1Name, p2Name=game.player2Name)
 
             # Set headers
             self.send_response( 200 ); # OK
             self.send_header( "Content-type", "text/html" );
             self.send_header( "Content-length", len(response));
-            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
-            self.send_header("Pragma", "no-cache")
-            self.send_header("Expires", "0")
             self.end_headers();
 
             # Write the HTML response with embedded SVG content

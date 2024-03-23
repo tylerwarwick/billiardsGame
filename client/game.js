@@ -141,21 +141,20 @@ const animate = (svg) => {
     
         // Show the next frame
         if (index < frameCount) {
+            
             /*
             // delay().queue() attempt
-            frames.eq(index).removeClass('hidden').delay(40).queue((next) => {
+            frames.eq(index).removeClass('hidden').delay(20).queue((next) => {
                 showNextFrame(index + 1);
                 next();
             });
-            */
+            */  
 
-            
             // requestAnimation Attempt
             frames.eq(index).removeClass('hidden')
             requestAnimationFrame(() => {
                 showNextFrame(index + 1);
             });
-            
             
             /*
             // setTimeout attempt

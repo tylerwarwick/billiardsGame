@@ -9,7 +9,7 @@
 #define PHYLIB_TABLE_WIDTH (PHYLIB_TABLE_LENGTH / 2.0) // mm
 #define PHYLIB_SIM_RATE (0.0001)                       // s
 #define PHYLIB_VEL_EPSILON (0.01)                      // mm/s
-#define PHYLIB_DRAG (150.0)                            // mm/s^2
+#define PHYLIB_DRAG (600.0)                            // mm/s^2
 #define PHYLIB_MAX_TIME (600)                          // s
 #define PHYLIB_MAX_OBJECTS (26)
 
