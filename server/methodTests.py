@@ -53,16 +53,7 @@ game.shoot("Game", "Erin", table, 0, 0)
 reconstructedTable, playerWhoWentLast = db.latestGameState(1)
 """
 
-# I need to test making a long chain of svgs
-tables = db.shotFrames(1)
-
-str = ""
-for table in tables:
-    temp = db.readTable(table[0])
-    str = str +  "<g>" + temp.svg() + "</g>" 
-
-print(str)
-
-
-
-
+table = newTable()
+db.writeTable(table)
+print(table)
+print(db.readTable(592))

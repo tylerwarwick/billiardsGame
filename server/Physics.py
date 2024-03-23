@@ -631,7 +631,7 @@ class Database:
         # Need to get largest ballid and work back from there
 
         maxBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()[0]
-        ballIds = [(num, tableId) for num in range(startingBallId, maxBallId + 1)]
+        ballIds = [(num, tableId) for num in range(startingBallId+1, maxBallId + 1)]
 
         cur.executemany("INSERT INTO BallTable (BALLID, TABLEID) VALUES (?, ?)", ballIds) 
 

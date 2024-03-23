@@ -123,13 +123,14 @@ const toggleAnimationOn = (bool) => {
 
 const animate = (svg) => {
     // Put svg into animation div
-    $('#animation').html(svg)
+    $('#animation').empty().html("<h1>Hello</h1>")
 
     toggleAnimationOn(true)
 
 
     // Get all the <g> elements with the class "frame"
     const frames = document.querySelectorAll('.frame');
+    console.log(frames)
 
     // Function to show each frame for 40ms and then hide it
     function showNextFrame(index) {
@@ -146,7 +147,7 @@ const animate = (svg) => {
             }, 40);
 
             //Need special case for very last frame
-            if (index == frames.length - 1){
+            if (index === frames.length - 1){
                 //Put last frame into interactive div
                 $('#interactiveGame').empty().html("NEXT SHOT")
             }
