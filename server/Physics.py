@@ -528,6 +528,7 @@ class Database:
     
         # If we get no results, return none
         if (not data):
+            print("Unsuccesful read is returning none")
             return None
 
         # Query to get table time (only do so after checking this table exists above)
@@ -580,7 +581,7 @@ class Database:
         tableId = cur.fetchone()[0]
 
         # We will optimize by maintaining a list of queries and doing excecute many
-        queries = []
+        queriesVals = []
 
         # Insert balls
         for item in table:
@@ -609,7 +610,8 @@ class Database:
                     velY = ball.vel.y
 
                 # Put ball info into ball table
-                queries.append(f"INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES ({ball.number}, {ball.pos.x}, {ball.pos.y}, {velX}, {velY}) RETURNING BALLID;")
+                queriesVals.append((ball.number, ball.pos.x, ball.pos.y, velX, velY))
+                """
                 cur.execute("INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES (?, ?, ?, ?, ?) RETURNING BALLID;", (ball.number,
                                                                                                                            ball.pos.x,
                                                                                                                            ball.pos.y,
@@ -620,7 +622,18 @@ class Database:
 
                 # Put ball into BallTable
                 cur.execute("INSERT INTO BallTable (BALLID, TABLEID) VALUES (?, ?)", (ballId, tableId)) 
+                """
+        startingBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()[0]
+        # Excecute all these queries at once
+        cur.executemany("INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES (?, ?, ?, ?, ?) RETURNING BALLID;", queriesVals)
 
+        # Fetch list of returning ballIds
+        # Need to get largest ballid and work back from there
+
+        maxBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()[0]
+        ballIds = [(num, tableId) for num in range(startingBallId, maxBallId + 1)]
+
+        cur.executemany("INSERT INTO BallTable (BALLID, TABLEID) VALUES (?, ?)", ballIds) 
 
         # Commit connection and close cursor
         self.conn.commit()
