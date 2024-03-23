@@ -132,7 +132,6 @@ const animate = (svg) => {
 
     // I want to plug last frame of svg post into interactiveGame div
     lastFrameContent = frames.eq(frameCount-1).html()
-    console.log(lastFrameContent)
     
     function showNextFrame(index) {
         // Hide the current frame (if any)

@@ -19,22 +19,57 @@
         </nav>
         <div class="relative">
             <!-- Main SVG's -->
-            <div id="svgContainer" class="bg-transparent w-full h-screen flex flex-col items-center justify-center absolute z-10">
-               <div id="interactiveGame" class="z-4 ">
-                    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-                    <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
-                    "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-                    <svg id="insertFrameHere" height="70vh" viewBox="-25 -25 1400 2750"
-                    xmlns="http://www.w3.org/2000/svg"
-                    xmlns:xlink="http://www.w3.org/1999/xlink"> 
-                    />
-                        {svgContent}
-                    </svg>
-               </div>
-               <div id="animation"  class="z-6 hidden">
-                       <!-- Fill in animation content here (toggle hidden between two content boxes)-->
+            <div id="svgContainer" class="bg-transparent w-full h-screen flex items-center justify-center absolute z-10">
+                <div id="leftContent" class="w-1/3 h-full flex flex-col justify-center items-center space-y-5 z-2 pointer-events-none select-none">
+                    <img class="h-1/2"  src="/client/images/ash.png" alt="PLAYER 1 IMG NOT LOADED">
+                    <button type="button" class="text-white bg-blue-600 font-bold rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ">{p1Name}</button>
+                </div>
+                <div id="tableContent" class="w-1/3 justify-center items-center flex">
+                    <div id="interactiveGame" class="z-4 ">
+                        <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+                        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+                        "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+                        <svg id="insertFrameHere" height="70vh" viewBox="-25 -25 1400 2750"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"> 
+                        />
+                        <rect width="1350" height="2700" x="0" y="0" fill="#C0D0C0"></rect> <rect width="1400" height="25" x="-25" y="-25" fill="darkgreen"></rect>
+                        <rect width="1400" height="25" x="-25" y="2700" fill="darkgreen"></rect>
+                        <rect width="25" height="2750" x="-25" y="-25" fill="darkgreen"></rect>
+                        <rect width="25" height="2750" x="1350" y="-25" fill="darkgreen"></rect>
+                        <circle cx="0" cy="0" r="114" fill="black"></circle>
+                        <circle cx="0" cy="1350" r="114" fill="black"></circle>
+                        <circle cx="0" cy="2700" r="114" fill="black"></circle>
+                        <circle cx="1350" cy="0" r="114" fill="black"></circle>
+                        <circle cx="1350" cy="1350" r="114" fill="black"></circle>
+                        <circle cx="1350" cy="2700" r="114" fill="black"></circle>
+                        <circle id="cueBall" cx="675" cy="2025" r="28" fill="WHITE"></circle>
+                        <circle cx="675" cy="675" r="28" fill="YELLOW"></circle>
+                        <circle cx="644" cy="622" r="28" fill="BLUE"></circle>
+                        <circle cx="705" cy="622" r="28" fill="RED"></circle>
+                        <circle cx="614" cy="569" r="28" fill="PURPLE"></circle>
+                        <circle cx="675" cy="569" r="28" fill="ORANGE"></circle>
+                        <circle cx="736" cy="569" r="28" fill="GREEN"></circle>
+                        <circle cx="583" cy="516" r="28" fill="BROWN"></circle>
+                        <circle cx="644" cy="516" r="28" fill="BLACK"></circle>
+                        <circle cx="705" cy="516" r="28" fill="LIGHTYELLOW"></circle>
+                        <circle cx="766" cy="516" r="28" fill="LIGHTBLUE"></circle>
+                        <circle cx="553" cy="463" r="28" fill="PINK"></circle>
+                        <circle cx="614" cy="463" r="28" fill="MEDIUMPURPLE"></circle>
+                        <circle cx="675" cy="463" r="28" fill="LIGHTSALMON"></circle>
+                        <circle cx="736" cy="463" r="28" fill="LIGHTGREEN"></circle>
+                        <circle cx="797" cy="463" r="28" fill="SANDYBROWN"></circle>
+                        </svg>
+                    </div>
+                    <div id="animation"  class="z-6 hidden">
+                            <!-- Fill in animation content here (toggle hidden between two content boxes)-->
 
-                </div> 
+                    </div> 
+                </div>
+                <div id="rightContent" class="w-1/3 flex h-full flex-col justify-center items-center h-1/2 space-y-5 z-3 pointer-events-none select-none">
+                    <img class="h-1/2 " src="/client/images/gary.png" alt="PLAYER 2 IMG NOT LOADED">
+                    <span type="button" class="text-white bg-red-600 font-bold rounded-lg text-sm px-5 py-2.5 me-2 mb-2">{p2Name}</span>
+                </div>
             </div>
 
             <!-- Vector SVG -->

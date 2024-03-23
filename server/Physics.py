@@ -755,6 +755,8 @@ class Database:
         
         # Get latest table
         latestTable = self.readTable(data[0])
+        print("Table fetched for latest table: ", data[0])
+
 
         # Need to find most recent player to shoot
         mostRecentPlayerId = data[1]
@@ -936,6 +938,7 @@ class Game:
                 db.tableShot(newTableId, shotId)
 
         # Commit and close
+        db.conn.commit()
         db.close()
 
         # Tack on footer

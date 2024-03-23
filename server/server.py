@@ -77,10 +77,12 @@ def deleteTables():
 routes = {
             '/': '../client/index.html',
             '/client/index.js': '../client/index.js',
-            '/client/game.js': '../client/game.js'
+            '/client/game.js': '../client/game.js',
+            '/client/images/ash.png': '../client/images/ash.png',
+            '/client/images/gary.png': '../client/images/gary.png',
         }
 
-staticFiles = ['../client/index.html', '../client/index.js', "../client/game.js"]
+staticFiles = ['../client/index.html', '../client/index.js', "../client/game.js", "../client/images/ash.png", "../client/images/gary.png"]
 
 
 # My own request handler (GETs and POSTs)
@@ -113,18 +115,24 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Get actual path
             path = routes[parsedPath]   
 
+            # Check if the requested file is a PNG
+            if path.endswith('.png'):
+                content_type = 'image/png'
+            else:
+                content_type = 'text/html'
+
             # Open file and pass back to client
-            fp = open(path);
+            fp = open(path, 'rb');
             content = fp.read();
 
             # Set headers
             self.send_response( 200 ); # OK
-            self.send_header( "Content-type", "text/html" );
+            self.send_header( "Content-type", content_type );
             self.send_header( "Content-length", len(content));
             self.end_headers();
 
             # Send it to browser
-            self.wfile.write(bytes(content, "utf-8"));
+            self.wfile.write(content);
 
             # Close the file
             fp.close();
@@ -139,6 +147,10 @@ class PoolServer( BaseHTTPRequestHandler ):
             latestTable, thisPlayersTurn = db.latestGameState(gameId)
             db.close()
 
+            print("Table from latestTable: ")
+            print(latestTable)
+            # I need both players name
+            game = p.Game(gameId)
 
             # TODO: Check if game has been won/lost
 
@@ -150,12 +162,15 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Replace the placeholder with table SVG
             tableSvg = latestTable.svg(False)
                 
-            response = gameHtml.format(svgContent=tableSvg)
+            response = gameHtml.format(svgContent=tableSvg, p1Name=game.player1Name, p2Name=game.player2Name)
 
             # Set headers
             self.send_response( 200 ); # OK
             self.send_header( "Content-type", "text/html" );
             self.send_header( "Content-length", len(response));
+            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+            self.send_header("Pragma", "no-cache")
+            self.send_header("Expires", "0")
             self.end_headers();
 
             # Write the HTML response with embedded SVG content
