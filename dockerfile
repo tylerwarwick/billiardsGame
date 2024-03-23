@@ -26,4 +26,4 @@ ENV LD_LIBRARY_PATH=/app/server
 EXPOSE 50124
     
 # Copy and run the entrypoint script
-#CMD ["python3", "server.py"]
+CMD ["python3", "server.py"]

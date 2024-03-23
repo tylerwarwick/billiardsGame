@@ -107,8 +107,8 @@ const getFrame = (tableId) => {
 
 
 const toggleAnimationOn = (bool) => {
-    gameDiv = $('#interactiveGame')
-    animationDiv = $('#animation')
+    const gameDiv = $('#interactiveGame')
+    const animationDiv = $('#animation')
 
     if (bool){
         gameDiv.addClass("hidden")
@@ -123,43 +123,61 @@ const toggleAnimationOn = (bool) => {
 
 const animate = (svg) => {
     // Put svg into animation div
-    $('#animation').empty().html("<h1>Hello</h1>")
-
+    $('#animation').empty().html(svg)
     toggleAnimationOn(true)
 
-
     // Get all the <g> elements with the class "frame"
-    const frames = document.querySelectorAll('.frame');
-    console.log(frames)
+    const frames = $('.frame');
+    const frameCount = frames.length
 
-    // Function to show each frame for 40ms and then hide it
+    
     function showNextFrame(index) {
         // Hide the current frame (if any)
         if (index > 0) {
-            frames[index - 1].addClass('hidden');
+            frames.eq(index - 1).addClass('hidden');
         }
-        
+    
         // Show the next frame
-        if (index < frames.length) {
-            frames[index].removeClass('hidden');
-            setTimeout(() => {
-                showNextFrame(index + 1); // Show the next frame after 40ms
-            }, 40);
+        if (index < frameCount) {
+            /*
+            // delay().queue() attempt
+            frames.eq(index).removeClass('hidden').delay(40).queue((next) => {
+                showNextFrame(index + 1);
+                next();
+            });
+            */
 
-            //Need special case for very last frame
-            if (index === frames.length - 1){
-                //Put last frame into interactive div
-                $('#interactiveGame').empty().html("NEXT SHOT")
+            
+            // requestAnimation Attempt
+            frames.eq(index).removeClass('hidden')
+            requestAnimationFrame(() => {
+                showNextFrame(index + 1);
+            });
+            
+            
+            /*
+            // setTimeout attempt
+            frames.eq(index).removeClass('hidden')
+            setTimeout(() => {
+                showNextFrame(index+1)
+            }, 40)
+            */
+
+            // Need special case for very last frame
+            if (index === frameCount - 1) {
+                // Put last frame into interactive div
+                $('#interactiveGame').empty().html("NEXT SHOT");
             }
         }
     }
+
 
     // Start the animation by showing the first frame
     showNextFrame(0);
 
     // Go back to interactive display
-    toggleAnimationOn(false)
-}
+    //toggleAnimationOn(false)
+}    
 
 
 /*

@@ -896,7 +896,11 @@ class Game:
   
         cueBall.obj.rolling_ball.acc.x = xAcc 
         cueBall.obj.rolling_ball.acc.y = yAcc
-                 
+
+
+        # Tack on svg header
+        svg = HEADER 
+
         # Fill in segment gaps
         while (table):
             # Save original time
@@ -915,9 +919,6 @@ class Game:
             # Get time elapsed and number of frames
             frames = m.floor((table.time - startTime) / FRAME_INTERVAL)
 
-            # Tack on svg header
-            svg = HEADER 
-
             # Make a table for each frame in this segment of time
             for i in range(0, frames+1):
                 # Get new table with roll applied
@@ -930,7 +931,7 @@ class Game:
                 newTableId = db.writeTable(newTable)
 
                 # Tack svg frame onto reel
-                svg = svg +  "<g id='frame' class='hidden' >" + newTable.svg(False) + "</g>\n"
+                svg = svg +  "<g class='hidden frame' >" + newTable.svg(False) + "</g>\n"
 
                 # Also record it in tableshot table
                 db.tableShot(newTableId, shotId)
