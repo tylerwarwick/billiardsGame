@@ -708,10 +708,21 @@ class Database:
         # Now for each table instance we just created in TTable REDACTED
         # Can't do executemany with tiered data, so we saved on about ~ (number of frames) queries
         # Update we can infact excecutemany by tactfully formatting our data
+        # It's all about matching BALLIDs with TABLEIDs in BallTable
+        # We can harvest ball params for free
+        ballInsertVals = []
 
+        # We need to be smarter with BallTable
+        ballTableVals = []
+        
+        # Harvest initial ballId here
+        startingBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()
 
-
-
+        # If db is brand new we need to None check startingId
+        if (startingBallId is None):
+            startingBallId = 1
+        else:
+            startingBallId = startingBallId[0] + 1
 
         # We'll also format our tableshot queries in this loop
         tableShotQueriesVals = []    
@@ -751,32 +762,41 @@ class Database:
 
                     # Put ball info into ball table
                     queriesVals.append((ball.number, ball.pos.x, ball.pos.y, velX, velY))
+
+                    # At this point we have a list of all balls for this specific tableId
+                    ballInsertVals.append((ball.number, ball.pos.x, ball.pos.y, velX, velY)) 
                 
 
-            # Excecute all these queries at once
-            startingBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()
+            
 
-            # If db is brand new we need to None check startingId
-            if (startingBallId is None):
-                startingBallId = 1
-            else:
-                startingBallId = startingBallId[0] + 1
+            print("Table number: ", tableIds[index]) 
+            print("StartingBallId: ", startingBallId)
+            # The hard part is making BallTable match
+            # Let's get how many balls our table has
+            ballCount = table.ballCount()
 
-                
-            cur.executemany("INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES (?, ?, ?, ?, ?) RETURNING BALLID;", queriesVals)
+            for num in range(startingBallId, startingBallId + ballCount):
+                #print("BallID: ", num)
+                #print("TableId: ", tableIds[index])
+                ballTableVals.append((num, tableIds[index]))
+            
+            # After doing all that, update the startingBallId
+            startingBallId = startingBallId + ballCount
 
-            # Fetch list of returning ballIds
-            # Need to get largest ballid and work back from there
-            # Only change comes here where we use corresponding tableId
-            maxBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()[0]
-            ballIds = [(num, tableIds[index]) for num in range(startingBallId, maxBallId + 1)]
-
-            cur.executemany("INSERT INTO BallTable (BALLID, TABLEID) VALUES (?, ?)", ballIds) 
+            
 
             # Commit connection and close cursor
             self.conn.commit()
 
-        
+
+
+        # We've collected all our ball value, actually send to db here
+        cur.executemany("INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES (?, ?, ?, ?, ?);", ballInsertVals)
+
+        # Same for BallTable
+        cur.executemany("INSERT INTO BallTable (BALLID, TABLEID) VALUES (?, ?)", ballTableVals) 
+
+
         # Batch is also responsible for TableShot table entries
         # We won't bother making batch tableshot function
         query = "INSERT INTO TableShot (TABLEID, SHOTID) VALUES (?, ?);"

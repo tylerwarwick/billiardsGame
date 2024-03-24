@@ -66,8 +66,8 @@ startTime = time.time()
 
 # New shoot
 svg, shotId = game.newShoot("who cares", "Erin", table, 0, -500)
-print(svg)
-print(shotId)
+#print(svg)
+#print(shotId)
 
 
 print("Time it took: ", time.time() - startTime)
