@@ -401,6 +401,20 @@ class Table( phylib.phylib_table ):
         # Return nothing or the cue
         return returnVal
     
+    # We'll fetch both the cue ball and 8 ball to save an iteration
+    def fetchImportantBallStatuses(self):
+        cueBall, eightBall = False
+
+        for obj in self:
+            # Find cue ball and return it
+            if (obj.__class__ is StillBall and obj.obj.still_ball.number == 0):
+                cueBall = True
+                
+            if (obj.__class__ is StillBall and obj.obj.rolling_ball.number == 8):
+                eightBall = True
+
+        return cueBall, eightBall
+    
 class Database:
 
     # Define constructor 
@@ -919,7 +933,7 @@ class Game:
             
             # Get time elapsed and number of frames
             frames = m.floor((table.time - startTime) / FRAME_INTERVAL)
-
+            
             # Make a table for each frame in this segment of time
             for i in range(0, frames+1):
                 # Get new table with roll applied
@@ -937,6 +951,15 @@ class Game:
                 # Also record it in tableshot table
                 db.tableShot(newTableId, shotId)
 
+                # Provided roll function does not cast deaccelerating balls to still
+                # Must include actual frame sent by C segment function
+                if (i == frames):
+                    # Save table with updated state in db
+                    lastTableId = db.writeTable(table)
+                    db.tableShot(lastTableId, shotId)
+
+
+
         # Commit and close
         db.conn.commit()
         db.close()
@@ -944,6 +967,7 @@ class Game:
         # Tack on footer
         svg = svg + FOOTER
 
+        print("SHOOT FINSIHED!!!")
         # Return shotId to make it easiest on server side
         # Update: return massive svg with frames as well
         return shotId, svg

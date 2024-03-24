@@ -71,6 +71,20 @@ def deleteTables():
         if re.match(r'^table-\w+\.svg$', file):
             os.remove('./' + file)
 
+# apply all rules for pool
+def applyRules(table):
+    # Get status of cue and 8 ball
+    cueBallExists, eightBallExists = table.fetchImportantBallStatuses()
+
+    # First off, if we have a sucken 8 ball, we have either a winner or loser
+    if (eightBallExists is False):
+        # Need to 
+        print()
+
+
+
+
+    return table
 
 
 # Define routes 
