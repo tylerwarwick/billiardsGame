@@ -1,3 +1,4 @@
+import time
 import Physics as p
 import server as s
 import math as m
@@ -46,8 +47,32 @@ def newTable():
     return table
 
 table = newTable()
-p.Database(True)
+db = p.Database(True)
+
 game = p.Game(None, "Game", "Tyler", "Erin")
+
+# one writetbale at a time attempt
+#db.writeTable(table)
+#db.writeTable(table)
+
+# batch write table
+#db.batchWriteTable([table, table], 1)
+
+startTime = time.time()
+# Old shoot
+#svg, shotId = game.shoot("who cares", "Erin", table, 0, -500)
+#print(svg)
+#print(shotId)
+
+# New shoot
+svg, shotId = game.newShoot("who cares", "Erin", table, 0, -500)
+print(svg)
+print(shotId)
+
+
+print("Time it took: ", time.time() - startTime)
+
+"""
 game.shoot("Game", "Erin", table, 0, 0)
 game.updateLowBallPlayer(1)
 gameId = game.gameID
@@ -58,5 +83,4 @@ reconstructedTable, playerWhoWentLast = db.latestGameState(1)
 game2 = p.Game(gameId)
 print("I just fetched this game and this is player 1: ", game2.player1Name, "\n player 2: ", game2.player2Name, "\n")
 print("Player ", game2.lowBallPlayer, " has lowballs\n")
-
-
+"""

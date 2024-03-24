@@ -643,7 +643,7 @@ class Database:
         if (startingBallId is None):
             startingBallId = 1
         else:
-            startingBallId = startingBallId[0]
+            startingBallId = startingBallId[0] + 1
 
         
         cur.executemany("INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES (?, ?, ?, ?, ?) RETURNING BALLID;", queriesVals)
@@ -652,7 +652,7 @@ class Database:
         # Need to get largest ballid and work back from there
 
         maxBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()[0]
-        ballIds = [(num, tableId) for num in range(startingBallId+1, maxBallId + 1)]
+        ballIds = [(num, tableId) for num in range(startingBallId, maxBallId + 1)]
 
         cur.executemany("INSERT INTO BallTable (BALLID, TABLEID) VALUES (?, ?)", ballIds) 
 
@@ -665,20 +665,118 @@ class Database:
         return tableId 
 
     # Batchwise write table
-    def batchWriteTable(self, tables):
-         # Get cursor
+    # This version also responsible for ShotTable entries
+    def batchWriteTable(self, tables, shotId):
+        # Get cursor
         cur = self.conn.cursor()
 
-        tableTimes = ((table.time,) for table in tables)
-        print(tableTimes)
+        # Get list of table times in tuple form
+        tableTimes = [(table.time,) for table in tables]
 
+        # Need to get starting tableId
+        startingTableId = cur.execute("SELECT TABLEID FROM TTable ORDER BY TABLEID DESC LIMIT 1").fetchone()
+        # If db is brand new we need to None check startingId
+        if (startingTableId is None):
+            startingTableId = 1
+        else:
+            startingTableId = startingTableId[0] + 1 
+
+
+        # Now make new tables
+        cur.executemany("INSERT INTO TTable (TIME) VALUES (?);", tableTimes) 
+
+        # Same idea, get most recently created tableId
+        maxTableId = cur.execute("SELECT TABLEID FROM TTable ORDER BY TABLEID DESC LIMIT 1").fetchone()[0]
+
+        # Now make a LIST of all tableIds in LIST form (we can cast to tuple later)
+        tableIds = [tableId for tableId in range(startingTableId, maxTableId + 1)]
+
+
+        # Now for each table instance we just created in TTable REDACTED
+        # Can't do executemany with tiered data, so we saved on about ~ (number of frames) queries
+
+        # We'll also format our tableshot queries in this loop
+        tableShotQueriesVals = []    
+
+        for index, table in enumerate(tables):
+            # As described
+            tableShotQueriesVals.append((tableIds[index], shotId))
+
+            # We will optimize by maintaining a list of queries and doing excecutemany
+            queriesVals = []
+
+            # Insert balls
+            for item in table:
+                # Only do something if it's ball
+                if (isinstance(item, (StillBall, RollingBall))): 
+                    # Get object for easy to access to props
+                    # Declare here and set based on still or rolling
+                    ball = None 
+                    velX = None
+                    velY = None
+
+                    # None val is not maintained when casted to 
+                    if (isinstance(item, StillBall)):
+                        # Assign still ball to object
+                        ball = item.obj.still_ball
+
+                        # Give no velocities
+                        velX = None
+                        velY = None 
+                    
+                    # Otherwise we have rolling ball
+                    else:
+                        # Assign as rolling ball
+                        ball = item.obj.rolling_ball
+                        velX = ball.vel.x
+                        velY = ball.vel.y
+
+                    # Put ball info into ball table
+                    queriesVals.append((ball.number, ball.pos.x, ball.pos.y, velX, velY))
+                
+
+            # Excecute all these queries at once
+            startingBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()
+
+            # If db is brand new we need to None check startingId
+            if (startingBallId is None):
+                startingBallId = 1
+            else:
+                startingBallId = startingBallId[0] + 1
+
+                
+            cur.executemany("INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES (?, ?, ?, ?, ?) RETURNING BALLID;", queriesVals)
+
+            # Fetch list of returning ballIds
+            # Need to get largest ballid and work back from there
+            # Only change comes here where we use corresponding tableId
+            maxBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()[0]
+            ballIds = [(num, tableIds[index]) for num in range(startingBallId, maxBallId + 1)]
+
+            cur.executemany("INSERT INTO BallTable (BALLID, TABLEID) VALUES (?, ?)", ballIds) 
+
+            # Commit connection and close cursor
+            self.conn.commit()
+
+        
+        # Batch is also responsible for TableShot table entries
+        # We won't bother making batch tableshot function
+        query = "INSERT INTO TableShot (TABLEID, SHOTID) VALUES (?, ?);"
+        cur.executemany(query, tableShotQueriesVals)
+
+        self.conn.commit()
+        cur.close()
+
+
+
+        """
         # Make new table in TTable
-        cur.execute("INSERT INTO TTable (TIME) VALUES (?) RETURNING TABLEID;", (table.time,))
+        cur.execute("INSERT INTO TTable (TIME) VALUES (?) RETURNING TABLEID;", (tables.time,))
 
         # Get newly created tableId
         tableId = cur.fetchone()[0]
 
-        # We will optimize by maintaining a list of queries and doing excecute many
+        # We will optimize by maintaining a list of queries and doing excecutemany
         queriesVals = []
 
         # Insert balls
@@ -717,7 +815,7 @@ class Database:
         if (startingBallId is None):
             startingBallId = 1
         else:
-            startingBallId = startingBallId[0]
+            startingBallId = startingBallId[0] + 1
 
         
         cur.executemany("INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES (?, ?, ?, ?, ?) RETURNING BALLID;", queriesVals)
@@ -726,7 +824,7 @@ class Database:
         # Need to get largest ballid and work back from there
 
         maxBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()[0]
-        ballIds = [(num, tableId) for num in range(startingBallId+1, maxBallId + 1)]
+        ballIds = [(num, tableId) for num in range(startingBallId, maxBallId + 1)]
 
         cur.executemany("INSERT INTO BallTable (BALLID, TABLEID) VALUES (?, ?)", ballIds) 
 
@@ -737,7 +835,7 @@ class Database:
         # Return tableId (in 0 index context)
         # ** TRY TO GET RID OF ARBITRARY ID OFFSETS
         return tableId 
-
+        """
 
 
 
@@ -984,6 +1082,100 @@ class Game:
         cueBall.obj.rolling_ball.acc.x = xAcc 
         cueBall.obj.rolling_ball.acc.y = yAcc
 
+        # Tack on svg header
+        svg = HEADER 
+
+        # Fill in segment gaps
+        while (table):
+            # Save original time
+            startTime = table.time
+
+            # Save old table to simulate from as well
+            startTable = table
+
+            # Run segment and get updated table
+            table = table.segment()
+
+            # Check if we are done iterating
+            if (table is None):
+                break 
+            
+            # Get time elapsed and number of frames
+            frames = m.floor((table.time - startTime) / FRAME_INTERVAL)
+
+            # Make a table for each frame in this segment of time
+            for i in range(0, frames+1):
+                # Get new table with roll applied
+                newTable = startTable.roll(i * FRAME_INTERVAL)
+              
+                # Set its time correctly
+                newTable.time = startTime + (i * FRAME_INTERVAL)
+
+                # Write this table to db
+                newTableId = db.writeTable(newTable)
+
+                # Tack svg frame onto reel
+                svg = svg +  "<g class='hidden frame' >" + newTable.svg(False) + "</g>\n"
+
+                # Also record it in tableshot table
+                db.tableShot(newTableId, shotId)
+
+                # Provided roll function does not cast deaccelerating balls to still
+                # Must include actual frame sent by C segment function
+                if (i == frames):
+                    # Save table with updated state in db
+                    lastTableId = db.writeTable(table)
+                    db.tableShot(lastTableId, shotId)
+                    svg = svg +  "<g class='hidden frame' >" + table.svg(False) + "</g>\n"
+
+        
+
+        # Commit and close
+        db.conn.commit()
+        db.close()
+
+        # Tack on footer
+        svg = svg + FOOTER
+
+        print("SHOOT FINSIHED!!!")
+        # Return shotId to make it easiest on server side
+        # Update: return massive svg with frames as well
+        return shotId, svg
+
+    def newShoot(self, gameName, playerName, table, xvel, yvel):
+        # If table is None, we can't do anything
+        if (table is None):
+            return None
+
+        # Get db instance
+        db = Database()
+
+        # Add entry to shot table in db and get shotId
+        shotId = db.newShot(self.gameID, playerName)
+
+        # Get cue ball
+        [cueBall, xPos, yPos] = table.cueBall()
+
+        # Store parameters across type conversion
+        cueBall.type = phylib.PHYLIB_ROLLING_BALL
+
+        # Refresh values of newly typecast cue ball
+        cueBall.obj.rolling_ball.number = 0 
+        cueBall.obj.rolling_ball.pos.x = xPos
+        cueBall.obj.rolling_ball.pos.y = yPos
+        cueBall.obj.rolling_ball.vel.x = xvel
+        cueBall.obj.rolling_ball.vel.y = yvel
+
+        # Get vector magnitude for speed
+        speed = m.sqrt((xvel * xvel) + (yvel * yvel))
+
+        # Only set non-zero acceleration if speed > epsilon
+        xAcc = ((-xvel / speed)  * DRAG) if (speed > phylib.PHYLIB_VEL_EPSILON) else 0
+        yAcc = ((-yvel / speed)  * DRAG) if (speed > phylib.PHYLIB_VEL_EPSILON) else 0
+  
+        cueBall.obj.rolling_ball.acc.x = xAcc 
+        cueBall.obj.rolling_ball.acc.y = yAcc
+
 
         # Tack on svg header
         svg = HEADER 
@@ -1042,55 +1234,8 @@ class Game:
                    
                     svg = svg +  "<g class='hidden frame' >" + table.svg(False) + "</g>\n"
 
-
-        """
-        
-        OG ATTEMPT
-        # Fill in segment gaps
-        while (table):
-            # Save original time
-            startTime = table.time
-
-            # Save old table to simulate from as well
-            startTable = table
-
-            # Run segment and get updated table
-            table = table.segment()
-
-            # Check if we are done iterating
-            if (table is None):
-                break 
-            
-            # Get time elapsed and number of frames
-            frames = m.floor((table.time - startTime) / FRAME_INTERVAL)
-
-            # Make a table for each frame in this segment of time
-            for i in range(0, frames+1):
-                # Get new table with roll applied
-                newTable = startTable.roll(i * FRAME_INTERVAL)
-              
-                # Set its time correctly
-                newTable.time = startTime + (i * FRAME_INTERVAL)
-
-                # Write this table to db
-                newTableId = db.writeTable(newTable)
-
-                # Tack svg frame onto reel
-                svg = svg +  "<g class='hidden frame' >" + newTable.svg(False) + "</g>\n"
-
-                # Also record it in tableshot table
-                db.tableShot(newTableId, shotId)
-
-                # Provided roll function does not cast deaccelerating balls to still
-                # Must include actual frame sent by C segment function
-                if (i == frames):
-                    # Save table with updated state in db
-                    lastTableId = db.writeTable(table)
-                    db.tableShot(lastTableId, shotId)
-                    svg = svg +  "<g class='hidden frame' >" + table.svg(False) + "</g>\n"
-
-
-        """
+        # Do all writing to db here
+        db.batchWriteTable(tablesToWrite, shotId)
 
         # Commit and close
         db.conn.commit()
@@ -1102,8 +1247,7 @@ class Game:
         print("SHOOT FINSIHED!!!")
         # Return shotId to make it easiest on server side
         # Update: return massive svg with frames as well
-        return shotId, svg
-    
+        return shotId, svg 
 
     # Need to update who's has what balls
     def updateLowBallPlayer(self, whoHasLowBalls):
