@@ -45,15 +45,8 @@ def newTable():
     
     return table
 
-"""
 table = newTable()
-
-game = p.Game(None, "Game", "Tyler", "Erin")
-game.shoot("Game", "Erin", table, 0, 0)
-reconstructedTable, playerWhoWentLast = db.latestGameState(1)
-"""
-
-table = newTable()
-db.writeTable(table)
-print(table)
-print(db.readTable(592))
+p.Database(True)
+#game = p.Game(None, "Game", "Tyler", "Erin")
+#game.shoot("Game", "Erin", table, 0, 0)
+#reconstructedTable, playerWhoWentLast = db.latestGameState(1)

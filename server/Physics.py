@@ -794,13 +794,13 @@ class Database:
 
 
         # Need to find most recent player to shoot
-        mostRecentPlayerId = data[1]
+        mostRecentPlayerName = data[1]
         
         # Want to find who's turn it is
         thisPlayersTurn = cur.execute("""SELECT PLAYERNAME 
                                          FROM Player 
-                                         WHERE GAMEID = ? AND PLAYERID != ?
-                                      """, (gameId, mostRecentPlayerId)).fetchone()[0]
+                                         WHERE GAMEID = ? AND PLAYERNAME != ?
+                                      """, (gameId, mostRecentPlayerName)).fetchone()[0]
 
         print("I FOUND THIS GUY TO BE NEXT: ", thisPlayersTurn, " \n\n\n\n")
         # Close connection off 
