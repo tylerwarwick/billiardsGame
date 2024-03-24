@@ -91,11 +91,11 @@ const setWhosTurnItIs = () => {
     thisPlayersTurn =  parseInt($('#thisPlayersTurn').html())
 
     if (thisPlayersTurn === 1) {
-        $('#leftContent').addClass("bg-pink-700")
+        $('#leftTurn').removeClass("hidden")
         return
     }
 
-    $('#rightContent').addClass("bg-pink-700")
+    $('#rightTurn').removeClass("hidden")
 }
 
 

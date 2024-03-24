@@ -298,10 +298,6 @@ class PoolServer( BaseHTTPRequestHandler ):
 
             # Shoot with velocities from client
             shotId, svg = game.shoot("tbd", thisPlayersTurn, latestTable, xVel, yVel)
-
-            # Return beginning and ending tableIds to client for animation
-            interval = db.shotInterval(shotId)
-            #response = str(interval[0]) + "-" + str(interval[1])
             response = svg
 
             # Close db
