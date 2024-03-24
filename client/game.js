@@ -87,6 +87,20 @@ const shoot = (xVel, yVel) => {
     });
 }
 
+const setWhosTurnItIs = () => {
+    thisPlayersTurn =  parseInt($('#thisPlayersTurn').html())
+
+    if (thisPlayersTurn === 1) {
+        $('#leftContent').addClass("bg-pink-700")
+        return
+    }
+
+    $('#rightContent').addClass("bg-pink-700")
+}
+
+
+
+
 
 const getFrame = (tableId) => {
     // Need to wrap as promise
@@ -168,7 +182,7 @@ const animate = (svg) => {
             if (index === frameCount - 1) {
                 // Put last frame into interactive div
                 $('#insertFrameHere').empty().html(lastFrameContent);
-                attachEventHandlers()
+                refresh()
                 toggleAnimationOn(false)
             }
         }
@@ -318,4 +332,15 @@ const attachEventHandlers = () => {
 
 }
 
-$(document).ready(attachEventHandlers());
+const refresh = () => {
+    attachEventHandlers()
+    setWhosTurnItIs()
+}
+
+
+
+$(document).ready(() => {
+    refresh()
+});
+
+

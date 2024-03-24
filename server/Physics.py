@@ -368,6 +368,16 @@ class Table( phylib.phylib_table ):
                 # compute where it rolls to
                 phylib.phylib_roll( new_ball, ball, t )
 
+                """
+                # EXPERIMENTAL: This is his code but I want to check for a ball coming to stand still here
+                velX = new_ball.obj.rolling_ball.vel.x
+                velY = new_ball.obj.rolling_ball.vel.y
+                speed = m.sqrt((velX*velX) + (velY * velY)) 
+
+                if (speed <= phylib.PHYLIB_VEL_EPSILON):
+                    new_ball.type = phylib.PHYLIB_STILL_BALL
+                    new_ball.__class__ = StillBall
+                """
                 # add ball to table
                 new += new_ball
               
@@ -636,8 +646,16 @@ class Database:
                 # Put ball into BallTable
                 cur.execute("INSERT INTO BallTable (BALLID, TABLEID) VALUES (?, ?)", (ballId, tableId)) 
                 """
-        startingBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()[0]
+
         # Excecute all these queries at once
+        startingBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()
+        # If db is brand new we need to None check startingId
+        if (startingBallId is None):
+            startingBallId = 1
+        else:
+            startingBallId = startingBallId[0]
+
+        
         cur.executemany("INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES (?, ?, ?, ?, ?) RETURNING BALLID;", queriesVals)
 
         # Fetch list of returning ballIds
@@ -721,6 +739,8 @@ class Database:
         # Get game and player ids for new shot
         playerId = cur.execute(query, (gameId, playerName,)).fetchone()[0]
 
+        print("THIS PLAYER IS SHOOTING--->", playerName, " \n\n\n\n")
+
         # Make new shot in shot table
         cur.execute("INSERT INTO Shot (PLAYERID, GAMEID) VALUES (?, ?) RETURNING SHOTID", (playerId, gameId)) 
 
@@ -754,10 +774,11 @@ class Database:
         
         # Query for most recent state of table
         query = """
-                SELECT TABLEID, PLAYERID
+                SELECT TABLEID, PLAYERNAME
                 FROM Shot
-                LEFT JOIN TableShot on Shot.SHOTID = TableShot.SHOTID
-                WHERE GAMEID = ? 
+                JOIN TableShot on Shot.SHOTID = TableShot.SHOTID
+                JOIN Player on Player.PLAYERID = Shot.PLAYERID
+                WHERE Shot.GAMEID = ? 
                 ORDER BY shot.SHOTID DESC, TABLEID DESC
                 LIMIT 1 
                 """
@@ -774,13 +795,14 @@ class Database:
 
         # Need to find most recent player to shoot
         mostRecentPlayerId = data[1]
-
+        
         # Want to find who's turn it is
         thisPlayersTurn = cur.execute("""SELECT PLAYERNAME 
                                          FROM Player 
                                          WHERE GAMEID = ? AND PLAYERID != ?
                                       """, (gameId, mostRecentPlayerId)).fetchone()[0]
 
+        print("I FOUND THIS GUY TO BE NEXT: ", thisPlayersTurn, " \n\n\n\n")
         # Close connection off 
         cur.close()
         
@@ -957,6 +979,7 @@ class Game:
                     # Save table with updated state in db
                     lastTableId = db.writeTable(table)
                     db.tableShot(lastTableId, shotId)
+                    svg = svg +  "<g class='hidden frame' >" + table.svg(False) + "</g>\n"
 
 
 

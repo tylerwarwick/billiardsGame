@@ -174,7 +174,15 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Replace the placeholder with table SVG
             tableSvg = latestTable.svg(False)
 
-            response = gameHtml.format(svgContent=tableSvg, p1Name=game.player1Name, p2Name=game.player2Name)
+            print("THIS PERSON DID NOT SHOOT LAST AND IS UP: " + thisPlayersTurn + "\n\n\n\n")
+            # Who's turn is it (1 or 2)
+            if (game.player1Name == thisPlayersTurn):
+                playerNumber = 1
+            else:
+                playerNumber = 2
+
+
+            response = gameHtml.format(svgContent=tableSvg, p1Name=game.player1Name, p2Name=game.player2Name, whosTurnItIs=playerNumber)
 
             # Set headers
             self.send_response( 200 ); # OK
@@ -235,6 +243,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             p1 = data["player1"][0]
             p2 = data["player2"][0]
             
+            
             # Make a new game with game class
             # Game is automatically written to db with init
             newGame = p.Game(None, "tbd", p1, p2)
@@ -286,9 +295,12 @@ class PoolServer( BaseHTTPRequestHandler ):
             db = p.Database()
             latestTable, thisPlayersTurn = db.latestGameState(gameId) 
             
-
+            
             # Get game object
             game = p.Game(gameId)
+
+
+            print("THIS PERSON IS SHOOINT: "+ thisPlayersTurn + "\n\n\n")
 
             # Shoot with velocities from client
             shotId, svg = game.shoot("tbd", thisPlayersTurn, latestTable, xVel, yVel)
