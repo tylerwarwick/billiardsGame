@@ -1086,7 +1086,7 @@ class Game:
     Further update: we need to check frame by frame the status of the balls to officiate game
     Also need to make writeTables calls all at once too. This will be one major refactor
     """
-    def shoot(self, gameName, playerName, table, xvel, yvel):
+    def oldShoot(self, gameName, playerName, table, xvel, yvel):
         # If table is None, we can't do anything
         if (table is None):
             return None
@@ -1180,7 +1180,7 @@ class Game:
         # Update: return massive svg with frames as well
         return shotId, svg
 
-    def newShoot(self, gameName, playerName, table, xvel, yvel):
+    def shoot(self, gameName, playerName, table, xvel, yvel):
         # If table is None, we can't do anything
         if (table is None):
             return None
