@@ -424,6 +424,19 @@ class Table( phylib.phylib_table ):
                 eightBall = True
 
         return cueBall, eightBall
+
+    # How many balls we have for shoot method    
+    def ballCount(self):
+        count = 0
+        
+        for obj in self:
+           if (obj.__class__ is StillBall or obj.__class__ is RollingBall):
+                count = count + 1
+
+        return count 
+
+
+
     
 class Database:
 
@@ -694,6 +707,11 @@ class Database:
 
         # Now for each table instance we just created in TTable REDACTED
         # Can't do executemany with tiered data, so we saved on about ~ (number of frames) queries
+        # Update we can infact excecutemany by tactfully formatting our data
+
+
+
+
 
         # We'll also format our tableshot queries in this loop
         tableShotQueriesVals = []    
