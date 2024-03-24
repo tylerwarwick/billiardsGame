@@ -506,7 +506,8 @@ class Database:
             """CREATE TABLE IF NOT EXISTS Game 
             (
                 GAMEID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                GAMENAME VARCHAR(64) NOT NULL
+                GAMENAME VARCHAR(64) NOT NULL,
+                LOWBALLPLAYER INTEGER
             );"""
         )
 
@@ -670,7 +671,7 @@ class Database:
 
         # Fetch game info from db
         query = """
-                SELECT Game.*, PLAYERID, PLAYERNAME
+                SELECT Game.GAMENAME, PLAYERID, PLAYERNAME, LOWBALLPLAYER
                 FROM Game
                 JOIN Player ON Game.GAMEID = Player.GAMEID
                 WHERE Game.GAMEID = ?
@@ -689,12 +690,12 @@ class Database:
         return data[0][1], data[0][3], data[1][3]
 
     # Set game method to create new game
-    def setGame(self, gameName, player1Name, player2Name):
+    def setGame(self, gameName, player1Name, player2Name, lowBallPlayer):
         # Need cursor
         cur = self.conn.cursor()
 
         # Create game new game instance
-        cur.execute("INSERT INTO Game (GAMENAME) VALUES (?) RETURNING GAMEID;", (gameName,))
+        cur.execute("INSERT INTO Game (GAMENAME) VALUES (?, ?) RETURNING GAMEID;", (gameName, lowBallPlayer))
 
         # Retrieve gameID for use with player creation
         gameID = cur.fetchone()[0]
@@ -848,6 +849,11 @@ class Game:
             self.gameName = gameName
             self.player1Name = player1Name
             self.player2Name = player2Name
+            self.lowBallPlayer = None
+            self.highBallPlayer = None
+
+
+
 
             # Put in db
             # Set unique game id attribute after creating it
@@ -864,6 +870,10 @@ class Game:
             raise TypeError
 
     # Update, we will create svgs as we create table frames to multiple/redudant trips to DB
+    """
+    Further update: we need to check frame by frame the status of the balls to officiate game
+    Also need to make writeTables calls all at once too. This will be one major refactor
+    """
     def shoot(self, gameName, playerName, table, xvel, yvel):
         # If table is None, we can't do anything
         if (table is None):

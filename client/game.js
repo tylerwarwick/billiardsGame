@@ -76,9 +76,6 @@ const shoot = (xVel, yVel) => {
         data: JSONData,
         success: function(response) {
             // On success, animate
-            //stringArr = response.split('-')
-            //console.log(parseInt(stringArr[0]))
-            //animate(parseInt(stringArr[0]), parseInt(stringArr[1]))
             animate(response)
         },
         error: function(xhr, status, error) {
@@ -97,9 +94,6 @@ const setWhosTurnItIs = () => {
 
     $('#rightTurn').removeClass("hidden")
 }
-
-
-
 
 
 const getFrame = (tableId) => {
@@ -197,95 +191,92 @@ const animate = (svg) => {
 
 
 const attachEventHandlers = () => {
-     // Get svg div
-     const svgContainer = $('#interactiveGame')
+    // Get svg div
+    const svgContainer = $('#interactiveGame')
 
 
-     // PRE SHOT LOGIC
-     // Now we can interact with the SVG elements
-     // Let's get cueBall element so we can work with it
-     cueBall = svgContainer.find("#cueBall")
+    // PRE SHOT LOGIC
+    // Now we can interact with the SVG elements
+    // Let's get cueBall element so we can work with it
+    cueBall = svgContainer.find("#cueBall")
 
 
-     // Define hover behaviour
-     // When hovering, indicate as such
-     cueBall.on("mouseenter", function() {
-         $(this).attr("fill", "#E0E0E0")
-     })
+    // Define hover behaviour
+    // When hovering, indicate as such
+    cueBall.on("mouseenter", function() {
+        $(this).attr("fill", "#E0E0E0")
+    })
      
-     cueBall.on('mouseout', function() {
-         if (!isDragging) $(this).attr("fill", "white")
-     })
+    cueBall.on('mouseout', function() {
+        if (!isDragging) $(this).attr("fill", "white")
+    })
 
-     // Gonna define line creator function here
-     const vector = $("#vector")
-     function makeVector(x1, y1, x2, y2) {
-         vector.removeClass("hidden")
-         vector.attr("x1", x1)
-         vector.attr("y1", y1)
-         vector.attr("x2", x2)
-         vector.attr("y2", y2)
-     }
+    // Gonna define line creator function here
+    const vector = $("#vector")
+    function makeVector(x1, y1, x2, y2) {
+        vector.removeClass("hidden")
+        vector.attr("x1", x1)
+        vector.attr("y1", y1)
+        vector.attr("x2", x2)
+        vector.attr("y2", y2)
+    }
 
 
-     function removeVector(){
-         vector.addClass("hidden")
-     }
+    function removeVector(){
+        vector.addClass("hidden")
+    }
 
      // Now what happens when we click on it
      let isDragging = false;
      let mouseX, mouseY
      cueBall.on('mousedown', function(event) {
-         isDragging = true
+        isDragging = true
 
-         // Let user know they are contacting it:
-         $(this).attr("fill", "#E0E0E0")
+        // Let user know they are contacting it:
+        $(this).attr("fill", "#E0E0E0")
 
-         // Get the cursor position relative to the viewport
-         mouseX = event.clientX;
-         mouseY = event.clientY;
+        // Get the cursor position relative to the viewport
+        mouseX = event.clientX;
+        mouseY = event.clientY;
      })
 
-     //Need a vector temp to pull velocity values from when mouse is let go of
-     let xVec, yVec
-     $(document).on('mousemove', function(event) {
-         // Check if dragging is in progress
-         if (isDragging) {
-             // Get normalized vector
-             const [deltaX, deltaY] = maxVector(mouseX, mouseY, event.clientX, event.clientY)
+    //Need a vector temp to pull velocity values from when mouse is let go of
+    let xVec, yVec
+    $(document).on('mousemove', function(event) {
+        // Check if dragging is in progress
+        if (isDragging) {
+            // Get normalized vector
+            const [deltaX, deltaY] = maxVector(mouseX, mouseY, event.clientX, event.clientY)
              
-             // Track vector for use when mouse is lifted
-             xVec = deltaX
-             yVec = deltaY 
+            // Track vector for use when mouse is lifted
+            xVec = deltaX
+            yVec = deltaY 
 
-             // Can circle back with extra time to change mouseX and mouseY
-             // So no clipping occurs with vector and cue ball
-             makeVector(mouseX, mouseY, mouseX+deltaX, mouseY+deltaY)   
-         }
+            // Can circle back with extra time to change mouseX and mouseY
+            // So no clipping occurs with vector and cue ball
+            makeVector(mouseX, mouseY, mouseX+deltaX, mouseY+deltaY)   
+        }
+    });
 
-       });
+    // Event listener for mouse up
+    $(document).on('mouseup', function() {
+        // Set the flag to false when mouse button is released
+        if (isDragging){
+            // We'll make POST request first
+            // We have vector components already at our disposal
+            const [xVel, yVel] = getUsableVelocities(xVec, yVec)
 
-     // Event listener for mouse up
-     $(document).on('mouseup', function() {
-         // Set the flag to false when mouse button is released
-         if (isDragging){
-             // We'll make POST request first
-             // We have vector components already at our disposal
-             const [xVel, yVel] = getUsableVelocities(xVec, yVec)
+            // Invert values to put in context of pool table
+            shoot(-xVel, -yVel)
 
-             // Invert values to put in context of pool table
-             shoot(-xVel, -yVel)
+            // Reset colour of cue ball
+            cueBall.attr("fill", "white") 
 
-             // Reset colour of cue ball
-             cueBall.attr("fill", "white") 
-
-             // Get rid of the line again
-             removeVector()
-         } 
-         isDragging = false;
-         
-     })
-
+            // Get rid of the line again
+            removeVector()
+        } 
+        isDragging = false;
+    })
 }
 
 const refresh = () => {

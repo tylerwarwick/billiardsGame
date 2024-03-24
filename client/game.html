@@ -30,8 +30,18 @@
                     <span class="text-white bg-blue-600 font-bold rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ">
                         {p1Name}
                     </span>
-                    <span class="text-white bg-blue-600 font-bold rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-44 h-16">
+                    <span id="leftBalls" class="text-white bg-blue-600 font-bold rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-44 h-16">
                         <h1>Balls to pot:</h1>
+                        <svg>
+                            <circle id="1" cx="10" cy="10" r="7" fill="YELLOW" />
+                            <circle id="2" cx="30" cy="10" r="7" fill="BLUE" />
+                            <circle id="3" cx="50" cy="10" r="7" fill="RED" />
+                            <circle id="4" cx="70" cy="10" r="7" fill="PURPLE" />
+                            <circle id="5" cx="90" cy="10" r="7" fill="ORANGE" />
+                            <circle id="6" cx="110" cy="10" r="7" fill="GREEN" />
+                            <circle id="7" cx="130" cy="10" r="7" fill="BROWN" />
+                            <circle id="8p1" cx="130" cy="10" r="7" fill="BLACK"></circle>
+                        </svg>
                     </span>
                 </div>
                 <div id="tableContent" class="w-1/3 justify-center items-center flex">
@@ -61,10 +71,18 @@
                     <span class="text-white bg-red-600 font-bold rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
                         {p2Name}
                     </span>
-                    <span class="text-white bg-red-600 font-bold rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-44 h-16">
-                        <h1>
-                            Balls to pot:
-                        </h1>
+                    <span id="rightBalls" class="text-white bg-red-600 font-bold rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-44 h-16">
+                        <h1>Balls to pot:</h1>
+                        <svg >
+                            <circle id="9" cx="10" cy="10" r="7" fill="LIGHTYELLOW" />
+                            <circle id="10" cx="30" cy="10" r="7" fill="LIGHTBLUE" />
+                            <circle id="11" cx="50" cy="10" r="7" fill="PINK" />
+                            <circle id="12" cx="70" cy="10" r="7" fill="MEDIUMPURPLE" />
+                            <circle id="13" cx="90" cy="10" r="7" fill="LIGHTSALMON" />
+                            <circle id="14" cx="110" cy="10" r="7" fill="LIGHTGREEN" />
+                            <circle id="15" cx="130" cy="10" r="7" fill="SANDYBROWN" />
+                            <circle id="8p2" cx="130" cy="10" r="7" fill="BLACK"></circle>
+                        </svg>
                     </span>
                 </div>
             </div>
@@ -78,8 +96,6 @@
                 </defs>
                 <line id="vector" x1="0" y1="0" x2="0" y2="700" stroke-width="5" stroke="black" class="hidden" marker-start="url(#arrowhead)"/>
             </svg>
-
-
         </div>
         <!-- Need to embed scripts for loading and interacting with svgs-->
         <script src="/client/game.js"></script>
@@ -87,8 +103,8 @@
             <div id="thisPlayersTurn">
                 {whosTurnItIs}    
             </div>
-            <div id="gameStatus">
-
+            <div id="highBalls">
+                
             </div>
         </div>
     </body>
