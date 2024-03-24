@@ -634,18 +634,7 @@ class Database:
 
                 # Put ball info into ball table
                 queriesVals.append((ball.number, ball.pos.x, ball.pos.y, velX, velY))
-                """
-                cur.execute("INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES (?, ?, ?, ?, ?) RETURNING BALLID;", (ball.number,
-                                                                                                                           ball.pos.x,
-                                                                                                                           ball.pos.y,
-                                                                                                                           velX,
-                                                                                                                           velY))
-
-                ballId = cur.fetchone()[0]
-
-                # Put ball into BallTable
-                cur.execute("INSERT INTO BallTable (BALLID, TABLEID) VALUES (?, ?)", (ballId, tableId)) 
-                """
+             
 
         # Excecute all these queries at once
         startingBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()
@@ -739,8 +728,6 @@ class Database:
         # Get game and player ids for new shot
         playerId = cur.execute(query, (gameId, playerName,)).fetchone()[0]
 
-        print("THIS PLAYER IS SHOOTING--->", playerName, " \n\n\n\n")
-
         # Make new shot in shot table
         cur.execute("INSERT INTO Shot (PLAYERID, GAMEID) VALUES (?, ?) RETURNING SHOTID", (playerId, gameId)) 
 
@@ -790,8 +777,6 @@ class Database:
         
         # Get latest table
         latestTable = self.readTable(data[0])
-        print("Table fetched for latest table: ", data[0])
-
 
         # Need to find most recent player to shoot
         mostRecentPlayerName = data[1]
@@ -802,7 +787,6 @@ class Database:
                                          WHERE GAMEID = ? AND PLAYERNAME != ?
                                       """, (gameId, mostRecentPlayerName)).fetchone()[0]
 
-        print("I FOUND THIS GUY TO BE NEXT: ", thisPlayersTurn, " \n\n\n\n")
         # Close connection off 
         cur.close()
         
@@ -826,27 +810,7 @@ class Database:
         # Return arrays of table
         return [tableId[0] for tableId in data] 
 
-    def shotInterval(self, shotId):
-        query = """
-                SELECT 
-                    (SELECT TABLEID 
-                    FROM TableShot 
-                    WHERE SHOTID = ?
-                    ORDER BY TABLEID ASC 
-                    LIMIT 1) AS lowest_tableId,
-                    (SELECT TABLEID 
-                    FROM TableShot 
-                    WHERE SHOTID = ? 
-                    ORDER BY TABLEID DESC 
-                    LIMIT 1) AS highest_tableId
-                """
-        
-        cur = self.conn.cursor()
-        data = cur.execute(query, (shotId, shotId)).fetchone()
-
-        return data
-
-
+    
     # Close method
     def close(self):
         self.conn.commit()
@@ -955,7 +919,7 @@ class Game:
             
             # Get time elapsed and number of frames
             frames = m.floor((table.time - startTime) / FRAME_INTERVAL)
-            
+
             # Make a table for each frame in this segment of time
             for i in range(0, frames+1):
                 # Get new table with roll applied

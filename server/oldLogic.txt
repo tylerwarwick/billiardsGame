@@ -1,0 +1,99 @@
+Some server methods:
+# Get the animation frames
+        # May come back and update db to indicate that we've seen this frame or something to that affect
+        # I could even just compare on backend of shoot POST as well but we'll see
+        elif parsedPath.startswith('/table'):
+            # Get tableId 
+            tableId = parsedPath.split('/')[-1]
+            print(tableId) 
+            
+            db = p.Database()
+            response = db.readTable(tableId).svg()
+            db.close()
+            
+            # Set headers
+            self.send_response( 200 ); # OK
+            self.send_header( "Content-type", "text/html" );
+            self.send_header( "Content-length", len(response));
+            self.end_headers(); 
+
+            self.wfile.write(response.encode("utf-8"))
+
+
+Old game js logic
+const animate = (start, end) => {
+    // Need to request table from server over interval of IDs and cast to screen
+    let i = start
+    
+    toggleAnimationOn(true)    
+    
+    while (i<= end){
+        getFrame(i)
+        .then((response) => {
+            $('#animation').empty()
+            setTimeout(() => { $('#animation').html(response)}, 40)
+            
+        })
+        .catch((error) => {
+            console.log("Broken frame retrieval")
+        })
+        i++
+    }   
+    
+    $('#interactiveGame').empty()
+    $('#interactiveGame').html()
+    
+
+    const animateFrame = () => {
+        if (i <= end) {
+            getFrame(i)
+                .then((response) => {
+                    $('#animation').html(response);
+                    i++;
+                    requestAnimationFrame(animateFrame); // Request the next frame
+                })
+                .catch((error) => {
+                    console.log("Broken frame retrieval");
+                });
+        } else {
+            toggleAnimationOn(false); // Animation complete
+        }
+    };
+
+    animateFrame(); // Start the animation loop
+}
+
+
+
+old database (writeTable) logic
+cur.execute("INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES (?, ?, ?, ?, ?) RETURNING BALLID;", (ball.number,
+                                                                                                                           ball.pos.x,
+                                                                                                                           ball.pos.y,
+                                                                                                                           velX,
+                                                                                                                           velY))
+
+                ballId = cur.fetchone()[0]
+
+                # Put ball into BallTable
+                cur.execute("INSERT INTO BallTable (BALLID, TABLEID) VALUES (?, ?)", (ballId, tableId)) 
+
+method for shot interval we don't use anymore
+def shotInterval(self, shotId):
+        query = """
+                SELECT 
+                    (SELECT TABLEID 
+                    FROM TableShot 
+                    WHERE SHOTID = ?
+                    ORDER BY TABLEID ASC 
+                    LIMIT 1) AS lowest_tableId,
+                    (SELECT TABLEID 
+                    FROM TableShot 
+                    WHERE SHOTID = ? 
+                    ORDER BY TABLEID DESC 
+                    LIMIT 1) AS highest_tableId
+                """
+        
+        cur = self.conn.cursor()
+        data = cur.execute(query, (shotId, shotId)).fetchone()
+
+        return data

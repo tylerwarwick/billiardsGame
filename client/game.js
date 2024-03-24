@@ -195,50 +195,6 @@ const animate = (svg) => {
 }    
 
 
-/*
-const animate = (start, end) => {
-    // Need to request table from server over interval of IDs and cast to screen
-    let i = start
-    
-    toggleAnimationOn(true)    
-    
-    while (i<= end){
-        getFrame(i)
-        .then((response) => {
-            $('#animation').empty()
-            setTimeout(() => { $('#animation').html(response)}, 40)
-            
-        })
-        .catch((error) => {
-            console.log("Broken frame retrieval")
-        })
-        i++
-    }   
-    
-    $('#interactiveGame').empty()
-    $('#interactiveGame').html()
-    
-
-    const animateFrame = () => {
-        if (i <= end) {
-            getFrame(i)
-                .then((response) => {
-                    $('#animation').html(response);
-                    i++;
-                    requestAnimationFrame(animateFrame); // Request the next frame
-                })
-                .catch((error) => {
-                    console.log("Broken frame retrieval");
-                });
-        } else {
-            toggleAnimationOn(false); // Animation complete
-        }
-    };
-
-    animateFrame(); // Start the animation loop
-}
-
-*/
 
 const attachEventHandlers = () => {
      // Get svg div

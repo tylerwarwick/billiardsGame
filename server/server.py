@@ -61,15 +61,32 @@ def newTable():
  
     
 
+# Holding onto my svg content here for a minute
+highBallsSvg = """
+                <svg >
+                <circle id="9" cx="10" cy="10" r="7" fill="LIGHTYELLOW" />
+                <circle id="10" cx="30" cy="10" r="7" fill="LIGHTBLUE" />
+                <circle id="11" cx="50" cy="10" r="7" fill="PINK" />
+                <circle id="12" cx="70" cy="10" r="7" fill="MEDIUMPURPLE" />
+                <circle id="13" cx="90" cy="10" r="7" fill="LIGHTSALMON" />
+                <circle id="14" cx="110" cy="10" r="7" fill="LIGHTGREEN" />
+                <circle id="15" cx="130" cy="10" r="7" fill="SANDYBROWN" />
+                <circle id="8p2" cx="130" cy="10" r="7" fill="BLACK"></circle>
+                </svg>
+                """
 
-# Helper function to delete files
-def deleteTables():
-    files = os.listdir('.')
-    
-    # Look for any table files and delete them
-    for file in files:
-        if re.match(r'^table-\w+\.svg$', file):
-            os.remove('./' + file)
+lowBallsSvg = """
+                <svg>
+                <circle id="1" cx="10" cy="10" r="7" fill="YELLOW" />
+                <circle id="2" cx="30" cy="10" r="7" fill="BLUE" />
+                <circle id="3" cx="50" cy="10" r="7" fill="RED" />
+                <circle id="4" cx="70" cy="10" r="7" fill="PURPLE" />
+                <circle id="5" cx="90" cy="10" r="7" fill="ORANGE" />
+                <circle id="6" cx="110" cy="10" r="7" fill="GREEN" />
+                <circle id="7" cx="130" cy="10" r="7" fill="BROWN" />
+                <circle id="8p1" cx="130" cy="10" r="7" fill="BLACK"></circle>
+                </svg>
+                """
 
 # apply all rules for pool
 def applyRules(table):
@@ -165,6 +182,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             game = p.Game(gameId)
 
             # TODO: Check if game has been won/lost
+            # Will need to do here as well as make into own endpoint for client to call after every shot
 
             # Get html file and embed table svg
             # Read the HTML template file
@@ -174,7 +192,6 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Replace the placeholder with table SVG
             tableSvg = latestTable.svg(False)
 
-            print("THIS PERSON DID NOT SHOOT LAST AND IS UP: " + thisPlayersTurn + "\n\n\n\n")
             # Who's turn is it (1 or 2)
             if (game.player1Name == thisPlayersTurn):
                 playerNumber = 1
@@ -191,26 +208,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             self.end_headers();
 
             # Write the HTML response with embedded SVG content
-            self.wfile.write(response.encode('utf-8'))
-
-        # Get the animation frames
-        # May come back and update db to indicate that we've seen this frame or something to that affect
-        elif parsedPath.startswith('/table'):
-            # Get tableId 
-            tableId = parsedPath.split('/')[-1]
-            print(tableId) 
-            
-            db = p.Database()
-            response = db.readTable(tableId).svg()
-            db.close()
-            
-            # Set headers
-            self.send_response( 200 ); # OK
-            self.send_header( "Content-type", "text/html" );
-            self.send_header( "Content-length", len(response));
-            self.end_headers(); 
-
-            self.wfile.write(response.encode("utf-8"))
+            self.wfile.write(response.encode('utf-8'))    
 
         # If the path doesn't match any routes, send back 404
         else:
@@ -243,7 +241,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             p1 = data["player1"][0]
             p2 = data["player2"][0]
             
-            
+
             # Make a new game with game class
             # Game is automatically written to db with init
             newGame = p.Game(None, "tbd", p1, p2)
@@ -294,13 +292,9 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Fetch latest game state
             db = p.Database()
             latestTable, thisPlayersTurn = db.latestGameState(gameId) 
-            
-            
+                        
             # Get game object
             game = p.Game(gameId)
-
-
-            print("THIS PERSON IS SHOOINT: "+ thisPlayersTurn + "\n\n\n")
 
             # Shoot with velocities from client
             shotId, svg = game.shoot("tbd", thisPlayersTurn, latestTable, xVel, yVel)
@@ -312,7 +306,6 @@ class PoolServer( BaseHTTPRequestHandler ):
 
             # Close db
             db.close()
-
 
             # generate the headers
             self.send_response( 200 ); # OK
