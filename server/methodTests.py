@@ -47,6 +47,16 @@ def newTable():
 
 table = newTable()
 p.Database(True)
-#game = p.Game(None, "Game", "Tyler", "Erin")
-#game.shoot("Game", "Erin", table, 0, 0)
-#reconstructedTable, playerWhoWentLast = db.latestGameState(1)
+game = p.Game(None, "Game", "Tyler", "Erin")
+game.shoot("Game", "Erin", table, 0, 0)
+game.updateLowBallPlayer(1)
+gameId = game.gameID
+print("I just made the game and this is player 1: ", game.player1Name, "\n player 2: ", game.player2Name, "\n")
+print("Player ", game.lowBallPlayer, " has lowballs\n")
+reconstructedTable, playerWhoWentLast = db.latestGameState(1)
+
+game2 = p.Game(gameId)
+print("I just fetched this game and this is player 1: ", game2.player1Name, "\n player 2: ", game2.player2Name, "\n")
+print("Player ", game2.lowBallPlayer, " has lowballs\n")
+
+

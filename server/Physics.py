@@ -686,16 +686,16 @@ class Database:
         self.conn.commit()
         cur.close()
 
-        # Return game name, and both players name
-        return data[0][1], data[0][3], data[1][3]
+        # Return game name, and both players name. New addition is who has lowBalls
+        return data[0][0], data[0][2], data[1][2], data[0][3]
 
     # Set game method to create new game
-    def setGame(self, gameName, player1Name, player2Name, lowBallPlayer):
+    def setGame(self, gameName, player1Name, player2Name):
         # Need cursor
         cur = self.conn.cursor()
 
         # Create game new game instance
-        cur.execute("INSERT INTO Game (GAMENAME) VALUES (?, ?) RETURNING GAMEID;", (gameName, lowBallPlayer))
+        cur.execute("INSERT INTO Game (GAMENAME, LOWBALLPLAYER) VALUES (?, ?) RETURNING GAMEID;", (gameName, None))
 
         # Retrieve gameID for use with player creation
         gameID = cur.fetchone()[0]
@@ -713,6 +713,7 @@ class Database:
         # Pass gameID back to game instance caller (Decrement for 0 indexing?)
         # ** TRY TO GET RID OF ARBITRARY ID OFFSETS
         return gameID
+
 
     # New shot for shoot class
     def newShot(self, gameId, playerName):
@@ -833,12 +834,13 @@ class Game:
 
             # Get game data from db
             # Ridding ourselves of arbitrary ID shifting
-            [gName, p1, p2] = db.getGame(gameID)
+            [gName, p1, p2, lowBallPlayer] = db.getGame(gameID)
 
             # Populate attributes
             self.gameName = gName
             self.player1Name = p1
             self.player2Name = p2
+            self.lowBallPlayer = lowBallPlayer 
 
             # Commit and close
             db.close()
@@ -850,10 +852,6 @@ class Game:
             self.player1Name = player1Name
             self.player2Name = player2Name
             self.lowBallPlayer = None
-            self.highBallPlayer = None
-
-
-
 
             # Put in db
             # Set unique game id attribute after creating it
@@ -968,7 +966,27 @@ class Game:
         # Return shotId to make it easiest on server side
         # Update: return massive svg with frames as well
         return shotId, svg
+    
 
+    # Need to update who's has what balls
+    def updateLowBallPlayer(self, whoHasLowBalls):
+        db = Database()
+        cur = db.conn.cursor()
+
+        # Update status of who's playing what balls
+        query = """
+                UPDATE Game 
+                SET LOWBALLPLAYER = ? 
+                WHERE GAMEID =  ?
+                """ 
+
+        # Excecute update
+        cur.execute(query, (whoHasLowBalls, self.gameID))
+        cur.close()
+        db.close()
+
+        # Make sure to update locally as well
+        self.lowBallPlayer = whoHasLowBalls
     
 
 
