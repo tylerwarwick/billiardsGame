@@ -1168,8 +1168,6 @@ class Game:
                 # Set its time correctly
                 newTable.time = startTime + (i * FRAME_INTERVAL)
 
-                # Write this table to db
-                #newTableId = db.writeTable(newTable)
                 # Append to list of tables to write to db
                 tablesToWrite.append(newTable)
 
@@ -1184,13 +1182,7 @@ class Game:
                 # Provided roll function does not cast deaccelerating balls to still
                 # Must include actual frame sent by C segment function
                 if (i == frames):
-                    # Save table with updated state in db
-                    #lastTableId = db.writeTable(table)
-
                     tablesToWrite.append(table)
-
-                    #db.tableShot(lastTableId, shotId)
-                   
                     svg = svg +  "<g class='hidden frame' >" + table.svg(False) + "</g>\n"
 
         # Do all writing to db here
@@ -1203,7 +1195,6 @@ class Game:
         # Tack on footer
         svg = svg + FOOTER
 
-        print("SHOOT FINSIHED!!!")
         # Return shotId to make it easiest on server side
         # Update: return massive svg with frames as well
         return shotId, svg 
