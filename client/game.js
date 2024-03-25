@@ -96,6 +96,23 @@ const setWhosTurnItIs = () => {
 }
 
 
+const toggleWhosTurnItIs = () => {
+    const leftTurn = $('#leftTurn')
+    const rightTurn = $('#rightTurn')
+
+
+    if (leftTurn.hasClass('hidden')) {
+        leftTurn.removeClass('hidden')
+        rightTurn.addClass('hidden')
+        return
+    }
+
+    rightTurn.removeClass('hidden')
+    leftTurn.addClass('hidden')
+
+}
+
+
 const getFrame = (tableId) => {
     // Need to wrap as promise
     return new Promise((resolve, reject) => {
@@ -176,8 +193,8 @@ const animate = (svg) => {
             if (index === frameCount - 1) {
                 // Put last frame into interactive div
                 $('#insertFrameHere').empty().html(lastFrameContent);
-                refresh()
                 toggleAnimationOn(false)
+                refresh()
             }
         }
     }
@@ -185,7 +202,6 @@ const animate = (svg) => {
 
     // Start the animation by showing the first frame
     showNextFrame(0);
-
 }    
 
 
@@ -281,13 +297,14 @@ const attachEventHandlers = () => {
 
 const refresh = () => {
     attachEventHandlers()
-    setWhosTurnItIs()
+    toggleWhosTurnItIs()
 }
 
 
 
 $(document).ready(() => {
-    refresh()
+    attachEventHandlers()
+    setWhosTurnItIs()
 });
 
 
