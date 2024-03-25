@@ -97,3 +97,98 @@ def shotInterval(self, shotId):
         data = cur.execute(query, (shotId, shotId)).fetchone()
 
         return data
+
+
+def oldShoot(self, gameName, playerName, table, xvel, yvel):
+        # If table is None, we can't do anything
+        if (table is None):
+            return None
+
+        # Get db instance
+        db = Database()
+
+        # Add entry to shot table in db and get shotId
+        shotId = db.newShot(self.gameID, playerName)
+
+        # Get cue ball
+        [cueBall, xPos, yPos] = table.cueBall()
+
+        # Store parameters across type conversion
+        cueBall.type = phylib.PHYLIB_ROLLING_BALL
+
+        # Refresh values of newly typecast cue ball
+        cueBall.obj.rolling_ball.number = 0 
+        cueBall.obj.rolling_ball.pos.x = xPos
+        cueBall.obj.rolling_ball.pos.y = yPos
+        cueBall.obj.rolling_ball.vel.x = xvel
+        cueBall.obj.rolling_ball.vel.y = yvel
+
+        # Get vector magnitude for speed
+        speed = m.sqrt((xvel * xvel) + (yvel * yvel))
+
+        # Only set non-zero acceleration if speed > epsilon
+        xAcc = ((-xvel / speed)  * DRAG) if (speed > phylib.PHYLIB_VEL_EPSILON) else 0
+        yAcc = ((-yvel / speed)  * DRAG) if (speed > phylib.PHYLIB_VEL_EPSILON) else 0
+  
+        cueBall.obj.rolling_ball.acc.x = xAcc 
+        cueBall.obj.rolling_ball.acc.y = yAcc
+
+        # Tack on svg header
+        svg = HEADER 
+
+        # Fill in segment gaps
+        while (table):
+            # Save original time
+            startTime = table.time
+
+            # Save old table to simulate from as well
+            startTable = table
+
+            # Run segment and get updated table
+            table = table.segment()
+
+            # Check if we are done iterating
+            if (table is None):
+                break 
+            
+            # Get time elapsed and number of frames
+            frames = m.floor((table.time - startTime) / FRAME_INTERVAL)
+
+            # Make a table for each frame in this segment of time
+            for i in range(0, frames+1):
+                # Get new table with roll applied
+                newTable = startTable.roll(i * FRAME_INTERVAL)
+              
+                # Set its time correctly
+                newTable.time = startTime + (i * FRAME_INTERVAL)
+
+                # Write this table to db
+                newTableId = db.writeTable(newTable)
+
+                # Tack svg frame onto reel
+                svg = svg +  "<g class='hidden frame' >" + newTable.svg(False) + "</g>\n"
+
+                # Also record it in tableshot table
+                db.tableShot(newTableId, shotId)
+
+                # Provided roll function does not cast deaccelerating balls to still
+                # Must include actual frame sent by C segment function
+                if (i == frames):
+                    # Save table with updated state in db
+                    lastTableId = db.writeTable(table)
+                    db.tableShot(lastTableId, shotId)
+                    svg = svg +  "<g class='hidden frame' >" + table.svg(False) + "</g>\n"
+
+        
+
+        # Commit and close
+        db.conn.commit()
+        db.close()
+
+        # Tack on footer
+        svg = svg + FOOTER
+
+        print("SHOOT FINSIHED!!!")
+        # Return shotId to make it easiest on server side
+        # Update: return massive svg with frames as well
+        return shotId, svg
