@@ -319,24 +319,6 @@ class Table( phylib.phylib_table ):
             result += "  [%02d] = %s\n" % (i,obj);  # append object description
         return result;  # return the string
 
-    def __copy__( self ):
-        tableCopy = Table()
-
-        for obj in self:
-            # Check the type of the object and create a copy accordingly
-            if isinstance(obj, StillBall):
-                tableCopy += StillBall(obj.obj.still_ball.number, Coordinate(obj.obj.still_ball.pos.x, obj.obj.still_ball.pos.y))
-            elif isinstance(obj, RollingBall):
-                tableCopy += RollingBall(obj.obj.rolling_ball.number, Coordinate(obj.obj.rolling_ball.pos.x, obj.obj.rolling_ball.pos.y), Coordinate(obj.obj.rolling_ball.vel.x, obj.obj.rolling_ball.vel.y), Coordinate(obj.obj.rolling_ball.acc.x, obj.obj.rolling_ball.acc.y))
-            elif isinstance(obj, Hole):
-                tableCopy += Hole(Coordinate(obj.obj.hole.pos.x, obj.obj.hole.pos.y))
-            elif isinstance(obj, HCushion):
-                tableCopy += HCushion(obj.obj.hcushion.y)
-            elif isinstance(obj, VCushion):
-                tableCopy += VCushion(obj.obj.vcushion.x)
-
-
-        return tableCopy
 
     def segment( self ):
         """
