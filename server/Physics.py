@@ -766,18 +766,11 @@ class Database:
                     # At this point we have a list of all balls for this specific tableId
                     ballInsertVals.append((ball.number, ball.pos.x, ball.pos.y, velX, velY)) 
                 
-
-            
-
-            print("Table number: ", tableIds[index]) 
-            print("StartingBallId: ", startingBallId)
             # The hard part is making BallTable match
             # Let's get how many balls our table has
             ballCount = table.ballCount()
 
             for num in range(startingBallId, startingBallId + ballCount):
-                #print("BallID: ", num)
-                #print("TableId: ", tableIds[index])
                 ballTableVals.append((num, tableIds[index]))
             
             # After doing all that, update the startingBallId
@@ -804,79 +797,6 @@ class Database:
 
         self.conn.commit()
         cur.close()
-
-
-
-        """
-        # Make new table in TTable
-        cur.execute("INSERT INTO TTable (TIME) VALUES (?) RETURNING TABLEID;", (tables.time,))
-
-        # Get newly created tableId
-        tableId = cur.fetchone()[0]
-
-        # We will optimize by maintaining a list of queries and doing excecutemany
-        queriesVals = []
-
-        # Insert balls
-        for item in table:
-            # Only do something if it's ball
-            if (isinstance(item, (StillBall, RollingBall))): 
-                # Get object for easy to access to props
-                # Declare here and set based on still or rolling
-                ball = None 
-                velX = None
-                velY = None
-
-                # None val is not maintained when casted to 
-                if (isinstance(item, StillBall)):
-                    # Assign still ball to object
-                    ball = item.obj.still_ball
-
-                    # Give no velocities
-                    velX = None
-                    velY = None 
-                
-                # Otherwise we have rolling ball
-                else:
-                    # Assign as rolling ball
-                    ball = item.obj.rolling_ball
-                    velX = ball.vel.x
-                    velY = ball.vel.y
-
-                # Put ball info into ball table
-                queriesVals.append((ball.number, ball.pos.x, ball.pos.y, velX, velY))
-             
-
-        # Excecute all these queries at once
-        startingBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()
-        # If db is brand new we need to None check startingId
-        if (startingBallId is None):
-            startingBallId = 1
-        else:
-            startingBallId = startingBallId[0] + 1
-
-        
-        cur.executemany("INSERT INTO Ball (BALLNO, XPOS, YPOS, XVEL, YVEL) VALUES (?, ?, ?, ?, ?) RETURNING BALLID;", queriesVals)
-
-        # Fetch list of returning ballIds
-        # Need to get largest ballid and work back from there
-
-        maxBallId = cur.execute("SELECT BALLID FROM Ball ORDER BY BALLID DESC LIMIT 1").fetchone()[0]
-        ballIds = [(num, tableId) for num in range(startingBallId, maxBallId + 1)]
-
-        cur.executemany("INSERT INTO BallTable (BALLID, TABLEID) VALUES (?, ?)", ballIds) 
-
-        # Commit connection and close cursor
-        self.conn.commit()
-        cur.close()
-
-        # Return tableId (in 0 index context)
-        # ** TRY TO GET RID OF ARBITRARY ID OFFSETS
-        return tableId 
-        """
-
-
-
 
     # Get game method for game class
     def getGame(self, gameID):
