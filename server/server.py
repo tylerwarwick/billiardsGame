@@ -221,12 +221,15 @@ class PoolServer( BaseHTTPRequestHandler ):
                     player1Balls = highBallContent
                     player2Balls = lowBallContent
 
+            
+
             response = gameHtml.format(svgContent=tableSvg, 
                                        p1Name = game.player1Name, 
                                        p2Name = game.player2Name, 
                                        whosTurnItIs = game.whosTurnItIs,
                                        player1Balls = player1Balls,
-                                       player2Balls = player2Balls 
+                                       player2Balls = player2Balls,
+                                       winner = winner 
                                        )
 
             # Set headers
