@@ -972,15 +972,34 @@ class Database:
         self.conn.close()
 
 
+def getBallNumber(ball):
+    if (isinstance(ball, StillBall)):
+        return ball.obj.still_ball.number
+
+    if (isinstance(ball, RollingBall)):
+        return ball.obj.rolling_ball.number
+
+    return None
+
+
 def shotEventHandler(startTable, endTable):
-    winner, ballSunken, firstBall = None
+    eightBallExists = False
+    gameOver = True
+    ballSunken = None 
+    firstBall = False
+
     # 1. Check for sunken ball in segment
     for index, obj in enumerate(startTable):
-        if (isinstance(obj, StillBall)):
-            if (obj.obj.still_ball.number != startTable):
-                print()
+        if (not (isinstance(obj, StillBall) or isinstance(obj, RollingBall))):
+            continue
+        
+        # We'll need to check if an 8 ball exists still
+        if (getBallNumber(endTable[index]) == 8):
+            eightBallExists = True
 
-            
+        # If we have a mismatch, we've sunk a ball
+        if (obj != endTable[index]):
+            ballSunken = getBallNumber(obj) 
 
 
 
