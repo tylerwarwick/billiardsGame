@@ -88,13 +88,11 @@ class StillBall( phylib.phylib_object ):
  
     def __eq__(self, otherBall) -> bool:
         # If classes or number don't match, they are not equal
-        if (not isinstance(otherBall, StillBall)):
-            return False
-        
-        if (self.obj.still_ball.number != otherBall.obj.still_ball.number):
-            return False
+        # If number doesn't match, they are not equal
+        if (isinstance(otherBall, StillBall)):
+            return self.obj.still_ball.number == otherBall.obj.still_ball.number
 
-        return True
+        return self.obj.still_ball.number == otherBall.obj.rolling_ball.number
 
     # SVG method
     def svg( self ):
@@ -133,15 +131,15 @@ class RollingBall( phylib.phylib_object ):
         # this converts the phylib_object into a StillBall class
         self.__class__ = RollingBall
 
+    # Need number only comparison
     def __eq__(self, otherBall) -> bool:
-        # If classes or number don't match, they are not equal
-        if (not isinstance(otherBall, RollingBall)):
-            return False
-        
-        if (self.obj.rolling_ball.number != otherBall.obj.rolling_ball.number):
-            return False
+        # If number doesn't match, they are not equal
+        if (isinstance(otherBall, StillBall)):
+            return self.obj.rolling_ball.number == otherBall.obj.still_ball.number
 
-        return True
+        return self.obj.rolling_ball.number == otherBall.obj.rolling_ball.number
+
+
 
     # SVG method
     def svg( self ):
@@ -982,9 +980,14 @@ def getBallNumber(ball):
     return None
 
 
+"""
+I know time complexity throws away any constants but I would like to do everything in one pass to be efficient
+"""
 def shotEventHandler(startTable, endTable):
     eightBallExists = False
-    gameOver = True
+    lowBallsInPlay = False 
+    highBallsInPlay = False
+    gameOver = False
     ballSunken = None 
     firstBall = False
 
@@ -992,16 +995,33 @@ def shotEventHandler(startTable, endTable):
     for index, obj in enumerate(startTable):
         if (not (isinstance(obj, StillBall) or isinstance(obj, RollingBall))):
             continue
-        
+            
+        #print(obj, " -- ", endTable[index])
+
+        # We can only have one ball sunk per call, so if we have none at index, that's the number
+        number = getBallNumber(endTable[index])
+        if (number is None):
+            ballSunken = getBallNumber(obj)
+            continue
+
         # We'll need to check if an 8 ball exists still
-        if (getBallNumber(endTable[index]) == 8):
+        if (number == 8):
             eightBallExists = True
+
+        # Need to check for existence of low and high balls
+        if (number <=7 and number > 0): 
+            lowBallsInPlay = True
+
+        if (number >= 9):
+            highBallsInPlay = True
 
         # If we have a mismatch, we've sunk a ball
         if (obj != endTable[index]):
             ballSunken = getBallNumber(obj) 
 
 
+    # Return all flags
+    return eightBallExists, lowBallsInPlay, highBallsInPlay, ballSunken, firstBall, gameOver   
 
     # 2. If this is first ball sunk, mark as such in svg timeline
     # 3. Check if 8 ball is gone preemptively
@@ -1100,6 +1120,10 @@ class Game:
         # SHOOT REWRITE FOR OPTIMIZATION AND CHECKING STATUS OF TABLE WITH EVERY SEGMENT
         tablesToWrite = []
 
+        # Lookahead flag for ballsunked
+        cueBallSunk = None
+
+
         # Fill in segment gaps
         while (table):
             # Save original time
@@ -1111,18 +1135,36 @@ class Game:
             # Run segment and get updated table
             table = table.segment()
 
-            # Need to compare/check for sunken balls
-           
-            
-
-
-
-
-
             # Check if we are done iterating
             if (table is None):
+                # If we are we have some important things to consider
+                # This is good rough in but will need to make function to decide where to set ball without collisions
+                if (cueBallSunk):
+                    startTable += StillBall(0, Coordinate(TABLE_WIDTH/2, TABLE_LENGTH - TABLE_WIDTH/2))
+                
+                tablesToWrite.append(startTable)
+                svg = svg +  "<g class='hidden frame' >" + startTable.svg(False) + "</g>\n"
                 break 
+
+            # Need to compare/check for sunken balls
+            eightBallExists, lowBallsInPlay, highBallsInPlay, ballSunken, firstBall, gameOver  = shotEventHandler(startTable, table)
+
+            if (ballSunken == 0):
+                cueBallSunk = True
+
+            if (ballSunken is not None):
+                print("---------------------- NEW EVENT -----------------------------")
+                print("Eight Ball Exists: ", eightBallExists)
+                print("Low balls: ", lowBallsInPlay)
+                print("High Balls: ", highBallsInPlay)
+                print('Ball Sunked: ', ballSunken)
+                print("First ball sunken: ", firstBall)
+                print("gameOVer: ", gameOver)
             
+
+
+
+
             # Get time elapsed and number of frames
             frames = m.floor((table.time - startTime) / FRAME_INTERVAL)
 
@@ -1144,7 +1186,7 @@ class Game:
 
                 # Provided roll function does not cast deaccelerating balls to still
                 # Must include actual frame sent by C segment function
-                if (i == frames):
+                if (i == frames and table.segment() is not None):
                     tablesToWrite.append(table)
                     svg = svg +  "<g class='hidden frame' >" + table.svg(False) + "</g>\n"
 
