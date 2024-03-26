@@ -62,31 +62,28 @@ def newTable():
     
 
 # Holding onto my svg content here for a minute
-highBallsSvg = """
-                <svg >
-                <circle id="9" cx="10" cy="10" r="7" fill="LIGHTYELLOW" />
-                <circle id="10" cx="30" cy="10" r="7" fill="LIGHTBLUE" />
-                <circle id="11" cx="50" cy="10" r="7" fill="PINK" />
-                <circle id="12" cx="70" cy="10" r="7" fill="MEDIUMPURPLE" />
-                <circle id="13" cx="90" cy="10" r="7" fill="LIGHTSALMON" />
-                <circle id="14" cx="110" cy="10" r="7" fill="LIGHTGREEN" />
-                <circle id="15" cx="130" cy="10" r="7" fill="SANDYBROWN" />
-                <circle id="8p2" cx="130" cy="10" r="7" fill="BLACK"></circle>
-                </svg>
-                """
+highBalls = [
+"""<circle id="9" cx="10" cy="10" r="7" fill="LIGHTYELLOW" />""", 
+"""<circle id="10" cx="30" cy="10" r="7" fill="LIGHTBLUE" />""",
+"""<circle id="11" cx="50" cy="10" r="7" fill="PINK" />""",
+"""<circle id="12" cx="70" cy="10" r="7" fill="MEDIUMPURPLE" />""",
+"""<circle id="13" cx="90" cy="10" r="7" fill="LIGHTSALMON" />"""
+""" <circle id="14" cx="110" cy="10" r="7" fill="LIGHTGREEN" />""",
+""" <circle id="15" cx="130" cy="10" r="7" fill="SANDYBROWN" />""",
+"""<circle id="8p2" cx="130" cy="10" r="7" fill="BLACK"></circle>"""
+]
+            
 
-lowBallsSvg = """
-                <svg>
-                <circle id="1" cx="10" cy="10" r="7" fill="YELLOW" />
-                <circle id="2" cx="30" cy="10" r="7" fill="BLUE" />
-                <circle id="3" cx="50" cy="10" r="7" fill="RED" />
-                <circle id="4" cx="70" cy="10" r="7" fill="PURPLE" />
-                <circle id="5" cx="90" cy="10" r="7" fill="ORANGE" />
-                <circle id="6" cx="110" cy="10" r="7" fill="GREEN" />
-                <circle id="7" cx="130" cy="10" r="7" fill="BROWN" />
-                <circle id="8p1" cx="130" cy="10" r="7" fill="BLACK"></circle>
-                </svg>
-                """
+lowBalls = [
+"""<circle id="1" cx="10" cy="10" r="7" fill="YELLOW" />""",
+"""<circle id="2" cx="30" cy="10" r="7" fill="BLUE" />""",
+"""<circle id="3" cx="50" cy="10" r="7" fill="RED" />""",
+"""<circle id="4" cx="70" cy="10" r="7" fill="PURPLE" />""",
+"""<circle id="5" cx="90" cy="10" r="7" fill="ORANGE" />""",
+"""<circle id="6" cx="110" cy="10" r="7" fill="GREEN" />""",
+"""<circle id="7" cx="130" cy="10" r="7" fill="BROWN" />""",
+"""<circle id="8p1" cx="130" cy="10" r="7" fill="BLACK"></circle>"""        
+]
 
 # apply all rules for pool
 def applyRules(table):
@@ -192,7 +189,41 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Replace the placeholder with table SVG
             tableSvg = latestTable.svg(False)
 
-            response = gameHtml.format(svgContent=tableSvg, p1Name=game.player1Name, p2Name=game.player2Name, whosTurnItIs=game.whosTurnItIs)
+            player1Balls = ""
+            player2Balls = ""
+
+            # Get ball svg contents
+            if (game.lowBallPlayer is not None):
+                lowBallContent = ""
+                highBallContent = ""
+                lowBallNums, HighBallNums = latestTable.lowAndHighBalls()
+
+                lowBallContent = lowBallContent + "<svg>"
+                highBallContent = highBallContent + "<svg>"
+
+                for num in lowBallNums:
+                    lowBallContent = lowBallContent + lowBalls[num-1]
+                
+                for num in HighBallNums:
+                    highBallContent = highBallContent + highBalls[num-9]
+
+                lowBallContent = lowBallContent + lowBalls[7] + "</svg>"
+                highBallContent = highBallContent + highBalls[7] + "</svg>"
+
+                if (game.lowBallPlayer == 1):
+                    player1Balls = lowBallContent 
+                    player2Balls = highBallContent
+                else:
+                    player1Balls = highBallContent
+                    player2Balls = lowBallContent
+
+            response = gameHtml.format(svgContent=tableSvg, 
+                                       p1Name = game.player1Name, 
+                                       p2Name = game.player2Name, 
+                                       whosTurnItIs = game.whosTurnItIs,
+                                       player1Balls = player1Balls,
+                                       player2Balls = player2Balls 
+                                       )
 
             # Set headers
             self.send_response( 200 ); # OK

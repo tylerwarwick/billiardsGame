@@ -453,7 +453,22 @@ class Table( phylib.phylib_table ):
 
         return count 
 
+    def lowAndHighBalls(self):
+        lowBalls = []
+        highBalls = []
 
+        for obj in self:
+            if (not (isinstance(obj, StillBall) or isinstance(obj, RollingBall))):
+                continue
+            
+            # If it's ball add to appropriate list
+            num = getBallNumber(obj)
+            if (num < 8 and num != 0):
+                lowBalls.append(num)
+            if (num >= 9):
+                highBalls.append(num)
+
+        return lowBalls, highBalls
 
     
 class Database:
@@ -1330,3 +1345,6 @@ class Game:
         cur.execute(query, (self.whosTurnItIs, self.gameID))
         cur.close()
         db.close()
+
+
+    
