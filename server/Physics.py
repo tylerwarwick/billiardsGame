@@ -987,7 +987,7 @@ I know time complexity throws away any constants but I would like to do everythi
 def shotEventHandler(startTable, endTable, playerNumber, lowBallPlayer):
     ballSunk = None 
     winner = None
-
+    
     # 1. Check for sunken ball in segment
     for index, obj in enumerate(startTable):
         if (not (isinstance(obj, StillBall) or isinstance(obj, RollingBall))):
@@ -1013,7 +1013,7 @@ def shotEventHandler(startTable, endTable, playerNumber, lowBallPlayer):
     # Game status
     # If we didn't sink a ball, we have nothing left to do
     if (ballSunk is None):
-        return ballSunk, winner, lowBallPlayer
+        return ballSunk, lowBallPlayer, winner
 
     # Get other player number
     otherPlayerNumber = 1 if (playerNumber != 1) else 2 
@@ -1033,8 +1033,6 @@ def shotEventHandler(startTable, endTable, playerNumber, lowBallPlayer):
     # If we dont have balls assigned to player, do so (we have ball sinking)
     if (lowBallPlayer is None):
         lowBallPlayer = otherPlayerNumber if ballSunk >= 9 else playerNumber
-
-
 
     # We've determined: if a ball was sunk, if anyone has lowballs, if anyone won
     return ballSunk, lowBallPlayer, winner
@@ -1101,6 +1099,7 @@ class Game:
         # Get db instance
         db = Database()
 
+        print(playerName)
         # Is this player 1 or player 2 shooting?
         playerNumber = 1 if self.player1Name == playerName else 2
 
@@ -1140,6 +1139,8 @@ class Game:
         # Lookahead flag for ballsunked
         cueBallSunk = None
 
+        # If we already have lowball player, dont keep setting it
+        lowBallSet = None
 
         # Fill in segment gaps
         while (table):
@@ -1176,23 +1177,29 @@ class Game:
                 svg = svg + f"<g class='hidden frame winner' > ${winner} </g>"
 
                 # Also need to confirm such in db
-                
+                self.updateWinner(winner)
+
+                name = self.player1Name if winner == 1 else self.player2Name
+                print(name, " is the winner!")
                 
             # First thing is letting client know to assign balls
-            if (lowBallPlayer is not None):
+            if (lowBallSet is None and lowBallPlayer is not None):
                 svg = svg + f"<g class='hidden frame lowBall' > ${lowBallPlayer} </g>"
 
                 # Also need to confirm such in db
+                self.updateLowBallPlayer(lowBallPlayer)
 
+                name = self.player1Name if lowBallPlayer == 1 else self.player2Name
+
+                # Don't set again
+                lowBallSet = 1
+                print("Lowballplayer: ", name)
 
             # If we sunk a ball, indicate as such within svg to client
             if (ballSunk is not None and ballSunk != 0):
-               print(ballSunk)
+               print("Sunk this ball: ", ballSunk)
                svg = svg + f"<g class='hidden frame ballSunk' > ${ballSunk} </g>"
  
-
-
-
 
             # Get time elapsed and number of frames
             frames = m.floor((table.time - startTime) / FRAME_INTERVAL)
@@ -1253,6 +1260,24 @@ class Game:
         # Make sure to update locally as well
         self.lowBallPlayer = whoHasLowBalls
     
+    # Need to update who's has what balls
+    def updateWinner(self, winner):
+        db = Database()
+        cur = db.conn.cursor()
 
+        # Update status of who's playing what balls
+        query = """
+                UPDATE Game 
+                SET WINNER = ? 
+                WHERE GAMEID =  ?
+                """ 
+
+        # Excecute update
+        cur.execute(query, (winner, self.gameID))
+        cur.close()
+        db.close()
+
+        # Make sure to update locally as well
+        self.winner = winner
 
 
