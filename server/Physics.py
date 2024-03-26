@@ -984,30 +984,20 @@ def getBallNumber(ball):
 """
 I know time complexity throws away any constants but I would like to do everything in one pass to be efficient
 """
-def shotEventHandler(startTable, endTable):
-    eightBallExists = False
-    lowBallsInPlay = False 
-    highBallsInPlay = False
-    gameOver = False
-    ballSunken = None 
-    firstBall = False
+def shotEventHandler(startTable, endTable, playerNumber, lowBallPlayer):
+    ballSunk = None 
+    winner = None
 
     # 1. Check for sunken ball in segment
     for index, obj in enumerate(startTable):
         if (not (isinstance(obj, StillBall) or isinstance(obj, RollingBall))):
             continue
             
-        #print(obj, " -- ", endTable[index])
-
         # We can only have one ball sunk per call, so if we have none at index, that's the number
         number = getBallNumber(endTable[index])
         if (number is None):
-            ballSunken = getBallNumber(obj)
+            ballSunk = getBallNumber(obj)
             continue
-
-        # We'll need to check if an 8 ball exists still
-        if (number == 8):
-            eightBallExists = True
 
         # Need to check for existence of low and high balls
         if (number <=7 and number > 0): 
@@ -1018,15 +1008,36 @@ def shotEventHandler(startTable, endTable):
 
         # If we have a mismatch, we've sunk a ball
         if (obj != endTable[index]):
-            ballSunken = getBallNumber(obj) 
+            ballSunk = getBallNumber(obj) 
+
+    # Game status
+    # If we didn't sink a ball, we have nothing left to do
+    if (ballSunk is None):
+        return ballSunk, winner, lowBallPlayer
+
+    # Get other player number
+    otherPlayerNumber = 1 if (playerNumber != 1) else 2 
+
+    # Let's first check we don't have a winner/loser
+    if (ballSunk == 8):
+        # If we don't have a low ball player, whoever took the shot lost
+        if (lowBallPlayer is not None):
+            if (not lowBallsInPlay and lowBallPlayer == playerNumber) or (not highBallsInPlay and lowBallPlayer != playerNumber):
+                winner = playerNumber
+            else: 
+                winner = otherPlayerNumber 
+        else:
+            winner = otherPlayerNumber
+
+    # Now we've determined winners/losers. If we made it to this stage the only thing left to do is assign balls
+    # If we dont have balls assigned to player, do so (we have ball sinking)
+    if (lowBallPlayer is None):
+        lowBallPlayer = otherPlayerNumber if ballSunk >= 9 else playerNumber
 
 
-    # Return all flags
-    return eightBallExists, lowBallsInPlay, highBallsInPlay, ballSunken, firstBall, gameOver   
 
-    # 2. If this is first ball sunk, mark as such in svg timeline
-    # 3. Check if 8 ball is gone preemptively
-    # 4. Check
+    # We've determined: if a ball was sunk, if anyone has lowballs, if anyone won
+    return ballSunk, lowBallPlayer, winner
 
 
 class Game:
@@ -1061,6 +1072,7 @@ class Game:
             self.player1Name = player1Name
             self.player2Name = player2Name
             self.lowBallPlayer = None
+            self.winner = None
 
             # Put in db
             # Set unique game id attribute after creating it
@@ -1089,7 +1101,8 @@ class Game:
         # Get db instance
         db = Database()
 
-        # 
+        # Is this player 1 or player 2 shooting?
+        playerNumber = 1 if self.player1Name == playerName else 2
 
         # Add entry to shot table in db and get shotId
         shotId = db.newShot(self.gameID, playerName)
@@ -1151,23 +1164,32 @@ class Game:
                 break 
 
             # Need to compare/check for sunken balls
-            eightBallExists, lowBallsInPlay, highBallsInPlay, ballSunken, firstBall, gameOver  = shotEventHandler(startTable, table)
+            ballSunk, lowBallPlayer, winner  = shotEventHandler(startTable, table, playerNumber, self.lowBallPlayer)
 
-            # Need to update who has what balls when someone sinks first ball
-
-
-            if (ballSunken == 0):
+            # If we sunk a cue ball we need to indicate to allow table to rerack
+            if (ballSunk == 0):
                 cueBallSunk = True
 
-            if (ballSunken is not None):
-                print("---------------------- NEW EVENT -----------------------------")
-                print("Eight Ball Exists: ", eightBallExists)
-                print("Low balls: ", lowBallsInPlay)
-                print("High Balls: ", highBallsInPlay)
-                print('Ball Sunked: ', ballSunken)
-                print("First ball sunken: ", firstBall)
-                print("gameOVer: ", gameOver)
-            
+            # Before anything else I want to confirm any winner
+            # Client side will stop all other activity and indicate winner
+            if (winner is not None):
+                svg = svg + f"<g class='hidden frame winner' > ${winner} </g>"
+
+                # Also need to confirm such in db
+                
+                
+            # First thing is letting client know to assign balls
+            if (lowBallPlayer is not None):
+                svg = svg + f"<g class='hidden frame lowBall' > ${lowBallPlayer} </g>"
+
+                # Also need to confirm such in db
+
+
+            # If we sunk a ball, indicate as such within svg to client
+            if (ballSunk is not None and ballSunk != 0):
+               print(ballSunk)
+               svg = svg + f"<g class='hidden frame ballSunk' > ${ballSunk} </g>"
+ 
 
 
 
