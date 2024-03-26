@@ -3,7 +3,32 @@
 // CONSTANTS
 const MAXVECTORLENGTH = 200
 const MAXSPEED = 10000 // (mm/s)
+const LOWBALLS = 
+` 
+<svg>
+    <circle id="1" cx="10" cy="10" r="7" fill="YELLOW" />
+    <circle id="2" cx="30" cy="10" r="7" fill="BLUE" />
+    <circle id="3" cx="50" cy="10" r="7" fill="RED" />
+    <circle id="4" cx="70" cy="10" r="7" fill="PURPLE" />
+    <circle id="5" cx="90" cy="10" r="7" fill="ORANGE" />
+    <circle id="6" cx="110" cy="10" r="7" fill="GREEN" />
+    <circle id="7" cx="130" cy="10" r="7" fill="BROWN" />
+    <circle id="8p1" cx="130" cy="10" r="7" fill="BLACK"></circle>
+</svg>` 
 
+const HIGHBALLS = 
+`
+<svg >
+    <circle id="9" cx="10" cy="10" r="7" fill="LIGHTYELLOW" />
+    <circle id="10" cx="30" cy="10" r="7" fill="LIGHTBLUE" />
+    <circle id="11" cx="50" cy="10" r="7" fill="PINK" />
+    <circle id="12" cx="70" cy="10" r="7" fill="MEDIUMPURPLE" />
+    <circle id="13" cx="90" cy="10" r="7" fill="LIGHTSALMON" />
+    <circle id="14" cx="110" cy="10" r="7" fill="LIGHTGREEN" />
+    <circle id="15" cx="130" cy="10" r="7" fill="SANDYBROWN" />
+    <circle id="8p2" cx="130" cy="10" r="7" fill="BLACK"></circle>
+</svg>
+`
 
 // STATE ElEMENTS
 let shotInterval = {
@@ -146,6 +171,25 @@ const toggleAnimationOn = (bool) => {
     }
 }
 
+const setLowBall = (playerNum) => {
+    left = $('#leftBalls')
+    right = $('#rightBalls')
+
+    if (playerNum = 1){
+        left.append(LOWBALLS)
+        right.append(HIGHBALLS) 
+        return
+    }
+
+    left.append(HIGHBALLS)
+    right.append(LOWBALLS)
+}
+
+
+
+
+
+
 const animate = (svg) => {
     // Put svg into animation div
     $('#animation').empty().html(svg)
@@ -166,29 +210,25 @@ const animate = (svg) => {
     
         // Show the next frame
         if (index < frameCount) {
-            
-            /*
-            // delay().queue() attempt
-            frames.eq(index).removeClass('hidden').delay(20).queue((next) => {
-                showNextFrame(index + 1);
-                next();
-            });
-            */  
+            // We have to process info frames
+            if (frames.eq(index).hasClass('lowBall')) {
+                num = parseInt(frames.eq(index).html())
+                setLowBall(num)
+                
+                requestAnimationFrame(() => {
+                    showNextFrame(index + 1);
+                }); 
+            } 
 
-            // requestAnimation Attempt
-            frames.eq(index).removeClass('hidden')
-            requestAnimationFrame(() => {
-                showNextFrame(index + 1);
-            });
+            else {
+                // requestAnimation Attempt
+                frames.eq(index).removeClass('hidden')
+                requestAnimationFrame(() => {
+                    showNextFrame(index + 1);
+                });
+            }
             
-            /*
-            // setTimeout attempt
-            frames.eq(index).removeClass('hidden')
-            setTimeout(() => {
-                showNextFrame(index+1)
-            }, 40)
-            */
-
+            
             // Need special case for very last frame
             if (index === frameCount - 1) {
                 // Put last frame into interactive div
