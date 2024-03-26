@@ -175,7 +175,7 @@ const setLowBall = (playerNum) => {
     left = $('#leftBalls')
     right = $('#rightBalls')
 
-    if (playerNum = 1){
+    if (playerNum === 1){
         left.append(LOWBALLS)
         right.append(HIGHBALLS) 
         return
@@ -216,6 +216,7 @@ const animate = (svg) => {
             // We have to process info frames
             if (currentFrame.hasClass('lowBall')) {
                 const num = parseInt(currentFrame.html())
+                console.log("Lowball passed: ", num)
                 setLowBall(num)
                 
                 requestAnimationFrame(() => {

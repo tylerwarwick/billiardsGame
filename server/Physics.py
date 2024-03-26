@@ -987,6 +987,8 @@ I know time complexity throws away any constants but I would like to do everythi
 def shotEventHandler(startTable, endTable, playerNumber, lowBallPlayer):
     ballSunk = None 
     winner = None
+    lowBallsInPlay = None
+    highBallsInPlay = None
     
     # 1. Check for sunken ball in segment
     for index, obj in enumerate(startTable):
@@ -1022,7 +1024,7 @@ def shotEventHandler(startTable, endTable, playerNumber, lowBallPlayer):
     if (ballSunk == 8):
         # If we don't have a low ball player, whoever took the shot lost
         if (lowBallPlayer is not None):
-            if (not lowBallsInPlay and lowBallPlayer == playerNumber) or (not highBallsInPlay and lowBallPlayer != playerNumber):
+            if (lowBallsInPlay is None and lowBallPlayer == playerNumber) or (highBallsInPlay is None and lowBallPlayer != playerNumber):
                 winner = playerNumber
             else: 
                 winner = otherPlayerNumber 
