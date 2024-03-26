@@ -85,7 +85,16 @@ class StillBall( phylib.phylib_object ):
       
         # this converts the phylib_object into a StillBall class
         self.__class__ = StillBall
+ 
+    def __eq__(self, object) -> bool:
+        # If classes or number don't match, they are not equal
+        if (not isinstance(object, StillBall)):
+            return False
+        
+        if (self.obj.still_ball.number != object.obj.still_ball.number):
+            return False
 
+        return True
 
     # SVG method
     def svg( self ):
@@ -124,6 +133,15 @@ class RollingBall( phylib.phylib_object ):
         # this converts the phylib_object into a StillBall class
         self.__class__ = RollingBall
 
+    def __eq__(self, object) -> bool:
+        # If classes or number don't match, they are not equal
+        if (not isinstance(object, RollingBall)):
+            return False
+        
+        if (self.obj.rolling_ball.number != object.obj.rolling_ball.number):
+            return False
+
+        return True
 
     # SVG method
     def svg( self ):
@@ -954,6 +972,20 @@ class Database:
         self.conn.close()
 
 
+def shotEventHandler(startTable, endTable):
+    winner, ballSunken, firstBall = None
+    # 1. Check for sunken ball in segment
+    for index, obj in enumerate(startTable):
+        if (isinstance(obj, StillBall)):
+            if (obj.obj.still_ball.number != startTable
+
+            
+
+
+
+    # 2. If this is first ball sunk, mark as such in svg timeline
+    # 3. Check if 8 ball is gone preemptively
+    # 4. Check
 
 
 class Game:
@@ -1058,6 +1090,14 @@ class Game:
 
             # Run segment and get updated table
             table = table.segment()
+
+            # Need to compare/check for sunken balls
+           
+            
+
+
+
+
 
             # Check if we are done iterating
             if (table is None):

@@ -8,6 +8,7 @@ makes the most sense (as opposed to redirects)
 $(document).ready(function() {
     $('#playerForm').submit(function(event) {
         event.preventDefault(); // Prevent default form submission
+        $('#submitButton').prop('disabled', true);
 
         // Serialize form data
         const formData = $(this).serialize(); 
@@ -27,6 +28,10 @@ $(document).ready(function() {
 
                 // Handle error response from the server
                 alert("Something went wrong! Please try starting a game again")
+            }, 
+            complete: function() {
+                // Re-enable the form submission button after AJAX call is complete
+                $('#submitButton').prop('disabled', false);
             }
         });
     });
