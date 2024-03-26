@@ -354,7 +354,7 @@ class Table( phylib.phylib_table ):
     # SVG method
     def svg(self, header=True):
         #Return svg representation
-        returnString = """<rect width="1350" height="2700" x="0" y="0" fill="#C0D0C0" />""";
+        returnString = """<rect width="1350" height="2700" x="0" y="0" fill="#064e3b" />""";
 
         #Append header
         if header:
@@ -1050,7 +1050,7 @@ def shotEventHandler(startTable, endTable, playerNumber, lowBallPlayer):
 
     # Now we've determined winners/losers. If we made it to this stage the only thing left to do is assign balls
     # If we dont have balls assigned to player, do so (we have ball sinking)
-    if (lowBallPlayer is None):
+    if (lowBallPlayer is None and ballSunk != 0):
         lowBallPlayer = otherPlayerNumber if ballSunk >= 9 else playerNumber
 
     # We've determined: if a ball was sunk, if anyone has lowballs, if anyone won

@@ -62,18 +62,6 @@ def newTable():
     
 
 # Holding onto my svg content here for a minute
-highBalls = [
-"""<circle id="9" cx="10" cy="10" r="7" fill="LIGHTYELLOW" />""", 
-"""<circle id="10" cx="30" cy="10" r="7" fill="LIGHTBLUE" />""",
-"""<circle id="11" cx="50" cy="10" r="7" fill="PINK" />""",
-"""<circle id="12" cx="70" cy="10" r="7" fill="MEDIUMPURPLE" />""",
-"""<circle id="13" cx="90" cy="10" r="7" fill="LIGHTSALMON" />"""
-""" <circle id="14" cx="110" cy="10" r="7" fill="LIGHTGREEN" />""",
-""" <circle id="15" cx="130" cy="10" r="7" fill="SANDYBROWN" />""",
-"""<circle id="8p2" cx="130" cy="10" r="7" fill="BLACK"></circle>"""
-]
-            
-
 lowBalls = [
 """<circle id="1" cx="10" cy="10" r="7" fill="YELLOW" />""",
 """<circle id="2" cx="30" cy="10" r="7" fill="BLUE" />""",
@@ -84,6 +72,19 @@ lowBalls = [
 """<circle id="7" cx="130" cy="10" r="7" fill="BROWN" />""",
 """<circle id="8p1" cx="130" cy="10" r="7" fill="BLACK"></circle>"""        
 ]
+
+
+highBalls = [
+"""<circle id="9" cx="10" cy="10" r="7" fill="LIGHTYELLOW" />""", 
+"""<circle id="10" cx="30" cy="10" r="7" fill="LIGHTBLUE" />""",
+"""<circle id="11" cx="50" cy="10" r="7" fill="PINK" />""",
+"""<circle id="12" cx="70" cy="10" r="7" fill="MEDIUMPURPLE" />""",
+"""<circle id="13" cx="90" cy="10" r="7" fill="LIGHTSALMON" />""",
+""" <circle id="14" cx="110" cy="10" r="7" fill="LIGHTGREEN" />""",
+""" <circle id="15" cx="130" cy="10" r="7" fill="SANDYBROWN" />""",
+"""<circle id="8p2" cx="130" cy="10" r="7" fill="BLACK"></circle>"""
+]
+
 
 # apply all rules for pool
 def applyRules(table):
@@ -191,6 +192,9 @@ class PoolServer( BaseHTTPRequestHandler ):
 
             player1Balls = ""
             player2Balls = ""
+
+            print(len(lowBalls))
+            print(len(highBalls))
 
             # Get ball svg contents
             if (game.lowBallPlayer is not None):
