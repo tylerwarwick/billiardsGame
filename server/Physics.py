@@ -1139,9 +1139,6 @@ class Game:
         # Lookahead flag for ballsunked
         cueBallSunk = None
 
-        # If we already have lowball player, dont keep setting it
-        lowBallSet = None
-
         # Fill in segment gaps
         while (table):
             # Save original time
@@ -1183,7 +1180,7 @@ class Game:
                 print(name, " is the winner!")
                 
             # First thing is letting client know to assign balls
-            if (lowBallSet is None and lowBallPlayer is not None):
+            if (self.lowBallPlayer is None and lowBallPlayer is not None):
                 svg = svg + f"<g class='hidden frame lowBall' > ${lowBallPlayer} </g>"
 
                 # Also need to confirm such in db
@@ -1191,8 +1188,6 @@ class Game:
 
                 name = self.player1Name if lowBallPlayer == 1 else self.player2Name
 
-                # Don't set again
-                lowBallSet = 1
                 print("Lowballplayer: ", name)
 
             # If we sunk a ball, indicate as such within svg to client
