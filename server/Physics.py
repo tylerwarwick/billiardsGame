@@ -538,7 +538,7 @@ class Database:
                 GAMEID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 GAMENAME VARCHAR(64) NOT NULL,
                 LOWBALLPLAYER INTEGER,
-                FINISHED BOOLEAN
+                WINNER INTEGER
             );"""
         )
 
@@ -823,7 +823,7 @@ class Database:
 
         # Fetch game info from db
         query = """
-                SELECT Game.GAMENAME, PLAYERID, PLAYERNAME, LOWBALLPLAYER, FINISHED
+                SELECT Game.GAMENAME, PLAYERID, PLAYERNAME, LOWBALLPLAYER, WINNER
                 FROM Game
                 JOIN Player ON Game.GAMEID = Player.GAMEID
                 WHERE Game.GAMEID = ?
@@ -847,7 +847,7 @@ class Database:
         cur = self.conn.cursor()
 
         # Create game new game instance
-        cur.execute("INSERT INTO Game (GAMENAME, LOWBALLPLAYER, FINISHED) VALUES (?, ?, ?) RETURNING GAMEID;", (gameName, None, False))
+        cur.execute("INSERT INTO Game (GAMENAME, LOWBALLPLAYER, WINNER) VALUES (?, ?, ?) RETURNING GAMEID;", (gameName, None, None))
 
         # Retrieve gameID for use with player creation
         gameID = cur.fetchone()[0]
@@ -1042,14 +1042,14 @@ class Game:
 
             # Get game data from db
             # Ridding ourselves of arbitrary ID shifting
-            [gName, p1, p2, lowBallPlayer, finished] = db.getGame(gameID)
+            [gName, p1, p2, lowBallPlayer, winner] = db.getGame(gameID)
 
             # Populate attributes
             self.gameName = gName
             self.player1Name = p1
             self.player2Name = p2
             self.lowBallPlayer = lowBallPlayer 
-            self.finished = finished
+            self.winner = winner
 
             # Commit and close
             db.close()
@@ -1088,6 +1088,8 @@ class Game:
 
         # Get db instance
         db = Database()
+
+        # 
 
         # Add entry to shot table in db and get shotId
         shotId = db.newShot(self.gameID, playerName)
