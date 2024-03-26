@@ -86,12 +86,12 @@ class StillBall( phylib.phylib_object ):
         # this converts the phylib_object into a StillBall class
         self.__class__ = StillBall
  
-    def __eq__(self, object) -> bool:
+    def __eq__(self, otherBall) -> bool:
         # If classes or number don't match, they are not equal
-        if (not isinstance(object, StillBall)):
+        if (not isinstance(otherBall, StillBall)):
             return False
         
-        if (self.obj.still_ball.number != object.obj.still_ball.number):
+        if (self.obj.still_ball.number != otherBall.obj.still_ball.number):
             return False
 
         return True
@@ -133,12 +133,12 @@ class RollingBall( phylib.phylib_object ):
         # this converts the phylib_object into a StillBall class
         self.__class__ = RollingBall
 
-    def __eq__(self, object) -> bool:
+    def __eq__(self, otherBall) -> bool:
         # If classes or number don't match, they are not equal
-        if (not isinstance(object, RollingBall)):
+        if (not isinstance(otherBall, RollingBall)):
             return False
         
-        if (self.obj.rolling_ball.number != object.obj.rolling_ball.number):
+        if (self.obj.rolling_ball.number != otherBall.obj.rolling_ball.number):
             return False
 
         return True
