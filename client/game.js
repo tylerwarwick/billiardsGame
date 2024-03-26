@@ -209,6 +209,11 @@ const animate = (svg) => {
         // Hide the current frame (if any)
         if (index > 0) {
             frames.eq(index - 1).addClass('hidden');
+
+            if (currentFrame.hasClass('lowBall') || 
+                currentFrame.hasClass('ballSunk')){
+                    frames.eq(index + 1).removeClass('hidden')
+                }
         }
     
         // Show the next frame
@@ -216,7 +221,6 @@ const animate = (svg) => {
             // We have to process info frames
             if (currentFrame.hasClass('lowBall')) {
                 const num = parseInt(currentFrame.html())
-                console.log("Lowball passed: ", num)
                 setLowBall(num)
                 
                 requestAnimationFrame(() => {
@@ -227,9 +231,9 @@ const animate = (svg) => {
             else if (currentFrame.hasClass('ballSunk')) {
                 console.log(currentFrame)
                 const num = parseInt(currentFrame.html())
-                console.log(num)
-                console.log('id: ', `#${num}`) 
+
                 // Remove ball from list for player 
+                // May need to come back and delete 8 ball
                 $(`#${num}`).remove()
                 
                 requestAnimationFrame(() => {
