@@ -537,7 +537,8 @@ class Database:
             (
                 GAMEID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 GAMENAME VARCHAR(64) NOT NULL,
-                LOWBALLPLAYER INTEGER
+                LOWBALLPLAYER INTEGER,
+                FINISHED BOOLEAN
             );"""
         )
 
@@ -822,7 +823,7 @@ class Database:
 
         # Fetch game info from db
         query = """
-                SELECT Game.GAMENAME, PLAYERID, PLAYERNAME, LOWBALLPLAYER
+                SELECT Game.GAMENAME, PLAYERID, PLAYERNAME, LOWBALLPLAYER, FINISHED
                 FROM Game
                 JOIN Player ON Game.GAMEID = Player.GAMEID
                 WHERE Game.GAMEID = ?
@@ -837,8 +838,8 @@ class Database:
         self.conn.commit()
         cur.close()
 
-        # Return game name, and both players name. New addition is who has lowBalls
-        return data[0][0], data[0][2], data[1][2], data[0][3]
+        # Return game name, and both players name. New addition, who has lowBalls and if game is finished
+        return data[0][0], data[0][2], data[1][2], data[0][3], data[0][4]
 
     # Set game method to create new game
     def setGame(self, gameName, player1Name, player2Name):
@@ -846,7 +847,7 @@ class Database:
         cur = self.conn.cursor()
 
         # Create game new game instance
-        cur.execute("INSERT INTO Game (GAMENAME, LOWBALLPLAYER) VALUES (?, ?) RETURNING GAMEID;", (gameName, None))
+        cur.execute("INSERT INTO Game (GAMENAME, LOWBALLPLAYER, FINISHED) VALUES (?, ?, ?) RETURNING GAMEID;", (gameName, None, False))
 
         # Retrieve gameID for use with player creation
         gameID = cur.fetchone()[0]
@@ -1041,13 +1042,14 @@ class Game:
 
             # Get game data from db
             # Ridding ourselves of arbitrary ID shifting
-            [gName, p1, p2, lowBallPlayer] = db.getGame(gameID)
+            [gName, p1, p2, lowBallPlayer, finished] = db.getGame(gameID)
 
             # Populate attributes
             self.gameName = gName
             self.player1Name = p1
             self.player2Name = p2
             self.lowBallPlayer = lowBallPlayer 
+            self.finished = finished
 
             # Commit and close
             db.close()
@@ -1150,7 +1152,7 @@ class Game:
             eightBallExists, lowBallsInPlay, highBallsInPlay, ballSunken, firstBall, gameOver  = shotEventHandler(startTable, table)
 
             # Need to update who has what balls when someone sinks first ball
-            
+
 
             if (ballSunken == 0):
                 cueBallSunk = True
