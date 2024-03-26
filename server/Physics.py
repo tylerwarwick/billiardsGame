@@ -1249,6 +1249,7 @@ class Game:
 
         # Also need to determine who's turn it is next
         if (self.lowBallPlayer is not None):
+            print(" LOW BALL IS NOT NONE")
             # Turns only change if player did not pot one of their balls
             if (self.lowBallPlayer == self.whosTurnItIs):
                 if (lowBallSunk is None):
@@ -1257,8 +1258,9 @@ class Game:
                 if (highBallSunk is None):
                     self.toggleTurn()
 
+        print("I want this player to be next: ", self.whosTurnItIs)
         # Now let client know the news:
-        svg = svg + "<g> class='frame turnUpdate' >" + str(self.whosTurnItIs) + "</g>\n" 
+        svg = svg + "<g class='frame turnUpdate' >" + str(self.whosTurnItIs) + "</g>\n" 
         
         # Tack on footer
         svg = svg + FOOTER

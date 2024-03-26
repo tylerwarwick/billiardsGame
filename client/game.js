@@ -178,12 +178,17 @@ const animate = (svg) => {
     toggleAnimationOn(true)
 
     // Get all the <g> elements with the class "frame"
-    const frames = $('.frame');
-    const frameCount = frames.length
+    const frames = $('.frame')
+
+    // We know last element is whos turn is next
+    const whosTurn = parseInt(frames.last().html())
+
+
+    const frameCount = frames.length - 1
 
     // I want to plug last frame of svg post into interactiveGame div
-    const lastFrameContent = frames.eq(frameCount-2).html()
-    const whosTurn = parseInt(frames.eq(frameCount-1).html())
+    const lastFrameContent = frames.eq(frameCount-1).html()
+   
     console.log(whosTurn)
     
     function showNextFrame(index) {
@@ -195,7 +200,7 @@ const animate = (svg) => {
             frames.eq(index - 1).addClass('hidden');
 
             if (currentFrame.hasClass('lowBall') || 
-                currentFrame.hasClass('ballSunk')){
+                currentFrame.hasClass('ballSunk')) {
                     frames.eq(index + 1).removeClass('hidden')
                 }
         }
@@ -234,7 +239,7 @@ const animate = (svg) => {
             
             
             // Need special case for very last frame
-            if (index === frameCount - 2) {
+            if (index === frameCount - 1) {
                 // Put last frame into interactive div
                 $('#insertFrameHere').empty().html(lastFrameContent);
                 toggleAnimationOn(false)

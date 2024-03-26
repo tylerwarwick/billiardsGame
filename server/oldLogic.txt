@@ -210,3 +210,9 @@ const getFrame = (tableId) => {
         })
     }) 
 }
+
+
+ else if (currentFrame.hasClass('turnUpdate')){
+                console.log(parseInt(currentFrame.html()))
+                whosTurn = parseInt(currentFrame.html())
+            }
