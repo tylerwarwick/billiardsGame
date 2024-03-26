@@ -200,9 +200,12 @@ const animate = (svg) => {
     const frameCount = frames.length
 
     // I want to plug last frame of svg post into interactiveGame div
-    lastFrameContent = frames.eq(frameCount-1).html()
+    const lastFrameContent = frames.eq(frameCount-1).html()
     
     function showNextFrame(index) {
+        // Get current frame just the once
+        const currentFrame = frames.eq(index)
+
         // Hide the current frame (if any)
         if (index > 0) {
             frames.eq(index - 1).addClass('hidden');
@@ -211,8 +214,8 @@ const animate = (svg) => {
         // Show the next frame
         if (index < frameCount) {
             // We have to process info frames
-            if (frames.eq(index).hasClass('lowBall')) {
-                num = parseInt(frames.eq(index).html())
+            if (currentFrame.hasClass('lowBall')) {
+                const num = parseInt(currentFrame.html())
                 setLowBall(num)
                 
                 requestAnimationFrame(() => {
@@ -220,9 +223,22 @@ const animate = (svg) => {
                 }); 
             } 
 
+            else if (currentFrame.hasClass('ballSunk')) {
+                console.log(currentFrame)
+                const num = parseInt(currentFrame.html())
+                console.log(num)
+                console.log('id: ', `#${num}`) 
+                // Remove ball from list for player 
+                $(`#${num}`).remove()
+                
+                requestAnimationFrame(() => {
+                    showNextFrame(index + 1);
+                }); 
+            }
+
             else {
                 // requestAnimation Attempt
-                frames.eq(index).removeClass('hidden')
+                currentFrame.removeClass('hidden')
                 requestAnimationFrame(() => {
                     showNextFrame(index + 1);
                 });

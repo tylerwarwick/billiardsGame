@@ -1171,7 +1171,7 @@ class Game:
             # Before anything else I want to confirm any winner
             # Client side will stop all other activity and indicate winner
             if (winner is not None):
-                svg = svg + f"<g class='hidden frame winner' > ${winner} </g>"
+                svg = svg + f"<g class='hidden frame winner' > {winner} </g>"
 
                 # Also need to confirm such in db
                 self.updateWinner(winner)
@@ -1181,7 +1181,7 @@ class Game:
                 
             # First thing is letting client know to assign balls
             if (self.lowBallPlayer is None and lowBallPlayer is not None):
-                svg = svg + f"<g class='hidden frame lowBall' > ${lowBallPlayer} </g>"
+                svg = svg + f"<g class='hidden frame lowBall' > {lowBallPlayer} </g>"
 
                 # Also need to confirm such in db
                 self.updateLowBallPlayer(lowBallPlayer)
@@ -1193,7 +1193,7 @@ class Game:
             # If we sunk a ball, indicate as such within svg to client
             if (ballSunk is not None and ballSunk != 0):
                print("Sunk this ball: ", ballSunk)
-               svg = svg + f"<g class='hidden frame ballSunk' > ${ballSunk} </g>"
+               svg = svg + f"<g class='hidden frame ballSunk' > {ballSunk} </g>"
  
 
             # Get time elapsed and number of frames
