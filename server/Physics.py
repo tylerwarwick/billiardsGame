@@ -1149,6 +1149,9 @@ class Game:
             # Need to compare/check for sunken balls
             eightBallExists, lowBallsInPlay, highBallsInPlay, ballSunken, firstBall, gameOver  = shotEventHandler(startTable, table)
 
+            # Need to update who has what balls when someone sinks first ball
+            
+
             if (ballSunken == 0):
                 cueBallSunk = True
 
