@@ -121,12 +121,12 @@ const setWhosTurnItIs = () => {
 }
 
 
-const toggleWhosTurnItIs = () => {
+const setWhosTurnItIsLive = (whosTurn) => {
     const leftTurn = $('#leftTurn')
     const rightTurn = $('#rightTurn')
 
 
-    if (leftTurn.hasClass('hidden')) {
+    if (whosTurn === 1) {
         leftTurn.removeClass('hidden')
         rightTurn.addClass('hidden')
         return
@@ -135,24 +135,6 @@ const toggleWhosTurnItIs = () => {
     rightTurn.removeClass('hidden')
     leftTurn.addClass('hidden')
 
-}
-
-
-const getFrame = (tableId) => {
-    // Need to wrap as promise
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: `/table/${tableId}`,
-            method: 'GET',
-            contentType: 'application/json',
-            success: (response) => {
-                return resolve(response)
-            },
-            error: (response) => {
-                reject(response)
-            }
-        })
-    }) 
 }
 
 
@@ -200,7 +182,9 @@ const animate = (svg) => {
     const frameCount = frames.length
 
     // I want to plug last frame of svg post into interactiveGame div
-    const lastFrameContent = frames.eq(frameCount-1).html()
+    const lastFrameContent = frames.eq(frameCount-2).html()
+    const whosTurn = parseInt(frames.eq(frameCount-1).html())
+    console.log(whosTurn)
     
     function showNextFrame(index) {
         // Get current frame just the once
@@ -229,7 +213,6 @@ const animate = (svg) => {
             } 
 
             else if (currentFrame.hasClass('ballSunk')) {
-                console.log(currentFrame)
                 const num = parseInt(currentFrame.html())
 
                 // Remove ball from list for player 
@@ -251,10 +234,11 @@ const animate = (svg) => {
             
             
             // Need special case for very last frame
-            if (index === frameCount - 1) {
+            if (index === frameCount - 2) {
                 // Put last frame into interactive div
                 $('#insertFrameHere').empty().html(lastFrameContent);
                 toggleAnimationOn(false)
+                setWhosTurnItIsLive(whosTurn)
                 refresh()
             }
         }
@@ -358,7 +342,6 @@ const attachEventHandlers = () => {
 
 const refresh = () => {
     attachEventHandlers()
-    toggleWhosTurnItIs()
 }
 
 

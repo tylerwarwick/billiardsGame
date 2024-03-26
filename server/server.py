@@ -192,14 +192,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             # Replace the placeholder with table SVG
             tableSvg = latestTable.svg(False)
 
-            # Who's turn is it (1 or 2)
-            if (game.player1Name == thisPlayersTurn):
-                playerNumber = 1
-            else:
-                playerNumber = 2
-
-
-            response = gameHtml.format(svgContent=tableSvg, p1Name=game.player1Name, p2Name=game.player2Name, whosTurnItIs=playerNumber)
+            response = gameHtml.format(svgContent=tableSvg, p1Name=game.player1Name, p2Name=game.player2Name, whosTurnItIs=game.whosTurnItIs)
 
             # Set headers
             self.send_response( 200 ); # OK
@@ -244,19 +237,18 @@ class PoolServer( BaseHTTPRequestHandler ):
 
             # Make a new game with game class
             # Game is automatically written to db with init
-            newGame = p.Game(None, "tbd", p1, p2)
+            newGame = p.Game(None, p1, p2)
 
             # Make brand new table with break setup
             table = newTable()
 
+            # REDACTED: We not maintain whos turn it is in db 
             # Put table in db
             # Also log a new shot in db (with vel of 0)
             # Will make it easier to fetch most current shot for given game id
             # Randomly pick p1 or p2, whoever is not picked will take first actual shot
-            if (random.choice([True, False])):
-                newGame.shoot("tbd", p1, table, 0, 0)
-            else:
-                newGame.shoot("tbd", p2, table, 0, 0)
+
+            newGame.shoot(table, 0.0, 0.0)
 
             # Need to send gameId back to client for new game window
             response = str(newGame.gameID)
@@ -297,7 +289,7 @@ class PoolServer( BaseHTTPRequestHandler ):
             game = p.Game(gameId)
 
             # Shoot with velocities from client
-            shotId, svg = game.shoot("tbd", thisPlayersTurn, latestTable, xVel, yVel)
+            shotId, svg = game.shoot(latestTable, xVel, yVel)
             response = svg
 
             # Close db

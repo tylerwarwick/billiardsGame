@@ -1,3 +1,4 @@
+import random
 import phylib;
 import os;
 import sqlite3;
@@ -538,7 +539,8 @@ class Database:
                 GAMEID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 GAMENAME VARCHAR(64) NOT NULL,
                 LOWBALLPLAYER INTEGER,
-                WINNER INTEGER
+                WINNER INTEGER,
+                WHOSTURNITIS INTEGER NOT NULL
             );"""
         )
 
@@ -823,7 +825,7 @@ class Database:
 
         # Fetch game info from db
         query = """
-                SELECT Game.GAMENAME, PLAYERID, PLAYERNAME, LOWBALLPLAYER, WINNER
+                SELECT PLAYERID, PLAYERNAME, LOWBALLPLAYER, WINNER, WHOSTURNITIS
                 FROM Game
                 JOIN Player ON Game.GAMEID = Player.GAMEID
                 WHERE Game.GAMEID = ?
@@ -838,16 +840,16 @@ class Database:
         self.conn.commit()
         cur.close()
 
-        # Return game name, and both players name. New addition, who has lowBalls and if game is finished
-        return data[0][0], data[0][2], data[1][2], data[0][3], data[0][4]
+        # Return game name, and both players name. New addition, who has lowBalls, if game is finished and whos turn it is
+        return data[0][1], data[1][1], data[0][2], data[0][3], data[0][4]
 
     # Set game method to create new game
-    def setGame(self, gameName, player1Name, player2Name):
+    def setGame(self, player1Name, player2Name, whosTurnItIs):
         # Need cursor
         cur = self.conn.cursor()
 
         # Create game new game instance
-        cur.execute("INSERT INTO Game (GAMENAME, LOWBALLPLAYER, WINNER) VALUES (?, ?, ?) RETURNING GAMEID;", (gameName, None, None))
+        cur.execute("INSERT INTO Game (GAMENAME, LOWBALLPLAYER, WINNER, WHOSTURNITIS) VALUES (?, ?, ?, ?) RETURNING GAMEID;", ("placeholder", None, None, whosTurnItIs))
 
         # Retrieve gameID for use with player creation
         gameID = cur.fetchone()[0]
@@ -1041,42 +1043,48 @@ def shotEventHandler(startTable, endTable, playerNumber, lowBallPlayer):
 
 
 class Game:
-    def __init__( self, gameID=None, gameName=None, player1Name=None, player2Name=None):
+    def __init__( self, gameID=None, player1Name=None, player2Name=None):
         # Need a db instance to work with
         db = Database()
 
         # First constructor format
-        if (gameID is not None and gameName is None and player1Name is None and player2Name is None):
+        if (gameID is not None and player1Name is None and player2Name is None):
             # For this constructor we know the gameID
             # ** TRY TO GET RID OF ARBITRARY ID OFFSETS
             self.gameID = gameID 
 
             # Get game data from db
             # Ridding ourselves of arbitrary ID shifting
-            [gName, p1, p2, lowBallPlayer, winner] = db.getGame(gameID)
+            [p1, p2, lowBallPlayer, winner, whosTurnItIs] = db.getGame(gameID)
 
             # Populate attributes
-            self.gameName = gName
             self.player1Name = p1
             self.player2Name = p2
             self.lowBallPlayer = lowBallPlayer 
-            self.winner = winner
+            self.winner = winner,
+            self.whosTurnItIs = whosTurnItIs
 
             # Commit and close
             db.close()
 
         # Second constructor format
-        elif (gameID is None and gameName is not None and player1Name is not None and player2Name is not None):
+        elif (gameID is None and player1Name is not None and player2Name is not None):
             # Set attributes 
-            self.gameName = gameName
             self.player1Name = player1Name
             self.player2Name = player2Name
             self.lowBallPlayer = None
             self.winner = None
 
+            # Pick random person to go first
+            if (random.choice([True, False])):
+                self.whosTurnItIs = 1
+            else:
+                self.whosTurnItIs = 2
+                
+
             # Put in db
             # Set unique game id attribute after creating it
-            self.gameID = db.setGame(gameName, player1Name, player2Name)
+            self.gameID = db.setGame(player1Name, player2Name, self.whosTurnItIs)
 
             # Commit and close
             db.close()
@@ -1093,7 +1101,7 @@ class Game:
     Further update: we need to check frame by frame the status of the balls to officiate game
     Also need to make writeTables calls all at once too. This will be one major refactor
     """
-    def shoot(self, gameName, playerName, table, xvel, yvel):
+    def shoot(self, table, xvel, yvel):
         # If table is None, we can't do anything
         if (table is None):
             return None
@@ -1101,9 +1109,8 @@ class Game:
         # Get db instance
         db = Database()
 
-        print(playerName)
         # Is this player 1 or player 2 shooting?
-        playerNumber = 1 if self.player1Name == playerName else 2
+        playerName = self.player1Name if self.whosTurnItIs == 1 else self.player2Name
 
         # Add entry to shot table in db and get shotId
         shotId = db.newShot(self.gameID, playerName)
@@ -1140,6 +1147,8 @@ class Game:
 
         # Lookahead flag for ballsunked
         cueBallSunk = None
+        highBallSunk = None
+        lowBallSunk = None
 
         # Fill in segment gaps
         while (table):
@@ -1164,7 +1173,7 @@ class Game:
                 break 
 
             # Need to compare/check for sunken balls
-            ballSunk, lowBallPlayer, winner  = shotEventHandler(startTable, table, playerNumber, self.lowBallPlayer)
+            ballSunk, lowBallPlayer, winner  = shotEventHandler(startTable, table, self.whosTurnItIs, self.lowBallPlayer)
 
             # If we sunk a cue ball we need to indicate to allow table to rerack
             if (ballSunk == 0):
@@ -1194,8 +1203,14 @@ class Game:
 
             # If we sunk a ball, indicate as such within svg to client
             if (ballSunk is not None and ballSunk != 0):
-               print("Sunk this ball: ", ballSunk)
-               svg = svg + f"<g class='hidden frame ballSunk' > {ballSunk} </g>"
+                if (ballSunk < 8):
+                    lowBallSunk = True
+                
+                if (ballSunk > 8):
+                    highBallSunk = True
+                
+                print("Sunk this ball: ", ballSunk)
+                svg = svg + f"<g class='hidden frame ballSunk' > {ballSunk} </g>"
  
 
             # Get time elapsed and number of frames
@@ -1230,6 +1245,21 @@ class Game:
         db.conn.commit()
         db.close()
 
+        
+
+        # Also need to determine who's turn it is next
+        if (self.lowBallPlayer is not None):
+            # Turns only change if player did not pot one of their balls
+            if (self.lowBallPlayer == self.whosTurnItIs):
+                if (lowBallSunk is None):
+                    self.toggleTurn()
+            else:
+                if (highBallSunk is None):
+                    self.toggleTurn()
+
+        # Now let client know the news:
+        svg = svg + "<g> class='frame turnUpdate' >" + str(self.whosTurnItIs) + "</g>\n" 
+        
         # Tack on footer
         svg = svg + FOOTER
 
@@ -1277,4 +1307,24 @@ class Game:
         # Make sure to update locally as well
         self.winner = winner
 
+    def toggleTurn(self):
+        if (self.whosTurnItIs == 1):
+            self.whosTurnItIs = 2
+        
+        else: 
+            self.whosTurnItIs = 1
+        
+        db = Database()
+        cur = db.conn.cursor()
 
+        # Update status of who's playing what balls
+        query = """
+                UPDATE Game 
+                SET WHOSTURNITIS = ? 
+                WHERE GAMEID =  ?
+                """ 
+
+        # Excecute update
+        cur.execute(query, (self.whosTurnItIs, self.gameID))
+        cur.close()
+        db.close()
