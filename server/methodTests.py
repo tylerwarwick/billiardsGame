@@ -65,7 +65,6 @@ startTime = time.time()
 #print(shotId)
 
 # New shoot
-svg, shotId = game.newShoot("who cares", "Erin", table, 0, -500)
 #print(svg)
 #print(shotId)
 
@@ -84,3 +83,16 @@ game2 = p.Game(gameId)
 print("I just fetched this game and this is player 1: ", game2.player1Name, "\n player 2: ", game2.player2Name, "\n")
 print("Player ", game2.lowBallPlayer, " has lowballs\n")
 """
+sb = p.StillBall(5, p.Coordinate(0, 0))
+sb2 = p.StillBall(5, p.Coordinate(0, 1))
+sb3 = p.StillBall(3, p.Coordinate(0, 1))
+rb = p.RollingBall(5, p.Coordinate(0, 0), p.Coordinate(45, 45), p.Coordinate(3, 2))
+rb2 = p.RollingBall(5, p.Coordinate(4, 4), p.Coordinate(3, 3), p.Coordinate(34, 34))
+rb3 = p.RollingBall(3, p.Coordinate(0, 1), p.Coordinate(3, 3), p.Coordinate(32, 3423))
+
+print(sb == sb2)
+print(sb == sb3)
+print(sb == rb)
+print(rb == rb2)
+print(rb == rb3)
+

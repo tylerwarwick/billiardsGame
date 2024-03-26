@@ -977,7 +977,8 @@ def shotEventHandler(startTable, endTable):
     # 1. Check for sunken ball in segment
     for index, obj in enumerate(startTable):
         if (isinstance(obj, StillBall)):
-            if (obj.obj.still_ball.number != startTable
+            if (obj.obj.still_ball.number != startTable):
+                print()
 
             
 
