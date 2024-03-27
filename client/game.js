@@ -120,6 +120,18 @@ const setWhosTurnItIs = () => {
     $('#rightTurn').removeClass("hidden")
 }
 
+const parseWinner = () => {
+    winnerDiv = $('#declareWinner')
+
+    if (winnerDiv.html().trim() === "") return
+
+    console.log(winnerDiv.html())
+    // Otherwise we have a winner so show the modal
+    $('#tableContent').html($('#winnerModal').html())
+
+}
+
+
 
 const setWhosTurnItIsLive = (whosTurn) => {
     const leftTurn = $('#leftTurn')
@@ -347,12 +359,13 @@ const attachEventHandlers = () => {
 
 const refresh = () => {
     attachEventHandlers()
+    parseWinner()
 }
 
 
 
 $(document).ready(() => {
-    attachEventHandlers()
+    refresh()
     setWhosTurnItIs()
 });
 

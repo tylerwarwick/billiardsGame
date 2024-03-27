@@ -221,7 +221,10 @@ class PoolServer( BaseHTTPRequestHandler ):
                     player1Balls = highBallContent
                     player2Balls = lowBallContent
 
-            
+            winner = ""
+            if (game.winner is not None):
+                print("Winner in get game: ", game.winner)
+                winner = str(game.getCurrentPlayer()) + " Wins!"
 
             response = gameHtml.format(svgContent=tableSvg, 
                                        p1Name = game.player1Name, 

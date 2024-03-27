@@ -1072,11 +1072,12 @@ class Game:
             # Ridding ourselves of arbitrary ID shifting
             [p1, p2, lowBallPlayer, winner, whosTurnItIs] = db.getGame(gameID)
 
+            print("WE MADE A FRESH GAME AND LOOOK AT WINNER: ", winner)
             # Populate attributes
             self.player1Name = p1
             self.player2Name = p2
             self.lowBallPlayer = lowBallPlayer 
-            self.winner = winner,
+            self.winner = winner
             self.whosTurnItIs = whosTurnItIs
 
             # Commit and close
@@ -1346,5 +1347,9 @@ class Game:
         cur.close()
         db.close()
 
+    def getCurrentPlayer(self):
+        if self.whosTurnItIs == 1:
+            return self.player1Name
+        return self.player2Name
 
     
