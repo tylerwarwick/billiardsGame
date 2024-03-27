@@ -1198,13 +1198,12 @@ class Game:
             # Before anything else I want to confirm any winner
             # Client side will stop all other activity and indicate winner
             if (winner is not None):
-                svg = svg + f"<g class='hidden frame winner' > {winner} </g>"
-
                 # Also need to confirm such in db
                 self.updateWinner(winner)
 
                 name = self.player1Name if winner == 1 else self.player2Name
-                print(name, " is the winner!")
+                print(name, " Wins!")
+                svg = svg + f"<g class='hidden frame winner' > {name} Wins! </g>"
                 
             # First thing is letting client know to assign balls
             if (self.lowBallPlayer is None and lowBallPlayer is not None):

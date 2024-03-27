@@ -125,8 +125,10 @@ const parseWinner = () => {
 
     if (winnerDiv.html().trim() === "") return
 
-    console.log(winnerDiv.html())
     // Otherwise we have a winner so show the modal
+    $('#animation').empty()
+    $('#leftTurn').addClass('hidden')
+    $('#rightTurn').addClass('hidden')
     $('#tableContent').html($('#winnerModal').html())
 
 }
@@ -195,7 +197,6 @@ const animate = (svg) => {
     // We know last element is whos turn is next
     const whosTurn = parseInt(frames.last().html())
 
-
     const frameCount = frames.length - 1
 
     // I want to plug last frame of svg post into interactiveGame div
@@ -212,7 +213,8 @@ const animate = (svg) => {
             frames.eq(index - 1).addClass('hidden');
 
             if (currentFrame.hasClass('lowBall') || 
-                currentFrame.hasClass('ballSunk')) {
+                currentFrame.hasClass('ballSunk') || 
+                currentFrame.hasClass('winner')) {
                     frames.eq(index + 1).removeClass('hidden')
                 }
         }
@@ -241,6 +243,15 @@ const animate = (svg) => {
                 }); 
             }
 
+            else if (currentFrame.hasClass('winner')){
+                // Push winner into winner modal
+                $('#declareWinner').empty().html(currentFrame.html())
+                
+                requestAnimationFrame(() => {
+                    showNextFrame(index + 1);
+                }); 
+            }
+
             else {
                 // requestAnimation Attempt
                 currentFrame.removeClass('hidden')
@@ -254,6 +265,7 @@ const animate = (svg) => {
             if (index === frameCount - 1) {
                 // Put last frame into interactive div
                 $('#insertFrameHere').empty().html(lastFrameContent);
+                parseWinner()
                 toggleAnimationOn(false)
                 setWhosTurnItIsLive(whosTurn)
                 refresh()
