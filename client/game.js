@@ -129,6 +129,11 @@ const parseWinner = () => {
     $('#animation').empty()
     $('#leftTurn').addClass('hidden')
     $('#rightTurn').addClass('hidden')
+
+    // Sort of useless but get rid of 8 ball
+    $('#8p1').remove()
+    $('#p2').remove()
+
     $('#tableContent').html($('#winnerModal').html())
 
 }
@@ -377,8 +382,8 @@ const refresh = () => {
 
 
 $(document).ready(() => {
-    refresh()
     setWhosTurnItIs()
+    refresh()
 });
 
 

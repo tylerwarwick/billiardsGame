@@ -814,7 +814,8 @@ class Database:
             
 
             # Commit connection and close cursor
-            self.conn.commit()
+            # Trying to slim down on commits
+            #self.conn.commit()
 
 
 
@@ -830,7 +831,8 @@ class Database:
         query = "INSERT INTO TableShot (TABLEID, SHOTID) VALUES (?, ?);"
         cur.executemany(query, tableShotQueriesVals)
 
-        self.conn.commit()
+        # Trying to slim down on commits
+        #self.conn.commit()
         cur.close()
 
     # Get game method for game class
@@ -1257,7 +1259,6 @@ class Game:
         db.batchWriteTable(tablesToWrite, shotId)
 
         # Commit and close
-        db.conn.commit()
         db.close()
 
         
