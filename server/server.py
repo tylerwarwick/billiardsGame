@@ -86,21 +86,6 @@ highBalls = [
 ]
 
 
-# apply all rules for pool
-def applyRules(table):
-    # Get status of cue and 8 ball
-    cueBallExists, eightBallExists = table.fetchImportantBallStatuses()
-
-    # First off, if we have a sucken 8 ball, we have either a winner or loser
-    if (eightBallExists is False):
-        # Need to 
-        print()
-
-
-
-
-    return table
-
 
 # Define routes 
 routes = {
@@ -193,8 +178,6 @@ class PoolServer( BaseHTTPRequestHandler ):
             player1Balls = ""
             player2Balls = ""
 
-            print(len(lowBalls))
-            print(len(highBalls))
 
             # Get ball svg contents
             if (game.lowBallPlayer is not None):
@@ -223,7 +206,6 @@ class PoolServer( BaseHTTPRequestHandler ):
 
             winner = ""
             if (game.winner is not None):
-                print("Winner in get game: ", game.winner)
                 winner = str(game.getCurrentPlayer()) + " Wins!"
 
             response = gameHtml.format(svgContent=tableSvg, 

@@ -1074,7 +1074,6 @@ class Game:
             # Ridding ourselves of arbitrary ID shifting
             [p1, p2, lowBallPlayer, winner, whosTurnItIs] = db.getGame(gameID)
 
-            print("WE MADE A FRESH GAME AND LOOOK AT WINNER: ", winner)
             # Populate attributes
             self.player1Name = p1
             self.player2Name = p2
@@ -1204,7 +1203,6 @@ class Game:
                 self.updateWinner(winner)
 
                 name = self.player1Name if winner == 1 else self.player2Name
-                print(name, " Wins!")
                 svg = svg + f"<g class='hidden frame winner' > {name} Wins! </g>"
                 
             # First thing is letting client know to assign balls
@@ -1216,7 +1214,6 @@ class Game:
 
                 name = self.player1Name if lowBallPlayer == 1 else self.player2Name
 
-                print("Lowballplayer: ", name)
 
             # If we sunk a ball, indicate as such within svg to client
             if (ballSunk is not None and ballSunk != 0):
@@ -1226,7 +1223,6 @@ class Game:
                 if (ballSunk > 8):
                     highBallSunk = True
                 
-                print("Sunk this ball: ", ballSunk)
                 svg = svg + f"<g class='hidden frame ballSunk' > {ballSunk} </g>"
  
 
@@ -1265,7 +1261,6 @@ class Game:
 
         # Also need to determine who's turn it is next
         if (self.lowBallPlayer is not None):
-            print(" LOW BALL IS NOT NONE")
             # Turns only change if player did not pot one of their balls
             if (self.lowBallPlayer == self.whosTurnItIs):
                 if (lowBallSunk is None):
@@ -1274,7 +1269,6 @@ class Game:
                 if (highBallSunk is None):
                     self.toggleTurn()
 
-        print("I want this player to be next: ", self.whosTurnItIs)
         # Now let client know the news:
         svg = svg + "<g class='frame turnUpdate' >" + str(self.whosTurnItIs) + "</g>\n" 
         
