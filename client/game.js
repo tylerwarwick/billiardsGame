@@ -231,8 +231,8 @@ const animate = (svg) => {
                 const num = parseInt(currentFrame.html())
                 
                 requestAnimationFrame(() => {
-                    showNextFrame(index + 1);
                     setLowBall(num)
+                    showNextFrame(index + 1);
                 }); 
             } 
 
@@ -242,16 +242,16 @@ const animate = (svg) => {
                 // Remove ball from list for player 
                 // May need to come back and delete 8 ball
                 requestAnimationFrame(() => {
-                    showNextFrame(index + 1);
                     $(`#${num}`).remove()
+                    showNextFrame(index + 1);
                 }); 
             }
 
             else if (currentFrame.hasClass('winner')){
                 // Push winner into winner modal
                 requestAnimationFrame(() => {
-                    showNextFrame(index + 1);
                     $('#declareWinner').empty().html(currentFrame.html())
+                    showNextFrame(index + 1);
                 }); 
             }
 
