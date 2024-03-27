@@ -216,3 +216,166 @@ const getFrame = (tableId) => {
                 console.log(parseInt(currentFrame.html()))
                 whosTurn = parseInt(currentFrame.html())
             }
+
+const animate = (svg) => {
+    // Put svg into animation div
+    $('#animation').empty().html(svg)
+    toggleAnimationOn(true)
+
+    // Get all the <g> elements with the class "frame"
+    const frames = $('.frame')
+
+    // We know last element is whos turn is next
+    const whosTurn = parseInt(frames.last().html())
+
+    const frameCount = frames.length - 1
+
+    // I want to plug last frame of svg post into interactiveGame div
+    const lastFrameContent = frames.eq(frameCount-1).html()
+   
+    console.log(whosTurn)
+    
+    function showNextFrame(index) {
+        // Get current frame just the once
+        const currentFrame = frames.eq(index)
+
+        // Hide the current frame (if any)
+        if (index > 0) {
+            frames.eq(index - 1).addClass('hidden');
+
+            if (currentFrame.hasClass('lowBall') || 
+                currentFrame.hasClass('ballSunk') || 
+                currentFrame.hasClass('winner')) {
+                    frames.eq(index + 1).removeClass('hidden')
+                }
+        }
+    
+        // Show the next frame
+        if (index < frameCount) {
+            // We have to process info frames
+            if (currentFrame.hasClass('lowBall')) {
+                const num = parseInt(currentFrame.html())
+                setLowBall(num)
+                
+                requestAnimationFrame(() => {
+                    showNextFrame(index + 1);
+                }); 
+            } 
+
+            else if (currentFrame.hasClass('ballSunk')) {
+                const num = parseInt(currentFrame.html())
+
+                // Remove ball from list for player 
+                // May need to come back and delete 8 ball
+                $(`#${num}`).remove()
+                
+                requestAnimationFrame(() => {
+                    showNextFrame(index + 1);
+                }); 
+            }
+
+            else if (currentFrame.hasClass('winner')){
+                // Push winner into winner modal
+                $('#declareWinner').empty().html(currentFrame.html())
+                
+                requestAnimationFrame(() => {
+                    showNextFrame(index + 1);
+                }); 
+            }
+
+            else {
+                // requestAnimation Attempt
+                currentFrame.removeClass('hidden')
+                requestAnimationFrame(() => {
+                    showNextFrame(index + 1);
+                });
+            }
+            
+            
+            // Need special case for very last frame
+            if (index === frameCount - 1) {
+                // Put last frame into interactive div
+                $('#insertFrameHere').empty().html(lastFrameContent);
+                parseWinner()
+                toggleAnimationOn(false)
+                setWhosTurnItIsLive(whosTurn)
+                refresh()
+            }
+        }
+    }
+
+
+    // Start the animation by showing the first frame
+    showNextFrame(0);
+}    
+
+const animate = (svg) => {
+    // Put svg into animation div
+    $('#animation').empty().html(svg)
+    toggleAnimationOn(true)
+
+    // Get all the <g> elements with the class "frame"
+    const frames = $('.frame')
+
+    // We know last element is whos turn is next
+    const whosTurn = parseInt(frames.last().html())
+
+    const frameCount = frames.length - 1
+
+    // I want to plug last frame of svg post into interactiveGame div
+    const lastFrameContent = frames.eq(frameCount-1).html()
+   
+    console.log(whosTurn)
+    
+    function showNextFrame(index) {
+        // Get current frame just the once
+        const currentFrame = frames.eq(index)
+        let isInfoFrame = false
+
+        if (currentFrame.hasClass('lowBall') || 
+        currentFrame.hasClass('ballSunk') || 
+        currentFrame.hasClass('winner')) isInfoFrame = True
+
+        // Hide the current frame (if any)
+        if (index > 0) frames.eq(index - 1).addClass('hidden');
+
+        if (isInfoFrame){
+            if (currentFrame.hasClass('lowBall')) {
+                const num = parseInt(currentFrame.html())
+                setLowBall(num)
+            } 
+            else if (currentFrame.hasClass('ballSunk')) {
+                const num = parseInt(currentFrame.html())
+                // Remove ball from list for player 
+                $(`#${num}`).remove()
+            }
+            else if (currentFrame.hasClass('winner')){
+                // Push winner into winner modal
+                $('#declareWinner').empty().html(currentFrame.html())
+            }
+
+            // Immediately call showNextFrame to skip the visual frame
+            requestAnimationFrame(() => showNextFrame(index + 1));
+        }
+        else if (index < frameCount) {
+            // Show the next frame
+            // requestAnimation Attempt
+            currentFrame.removeClass('hidden')
+            requestAnimationFrame(() => showNextFrame(index + 1));
+            
+            // Need special case for very last frame
+            if (index === frameCount - 1) {
+                // Put last frame into interactive div
+                $('#insertFrameHere').empty().html(lastFrameContent);
+                parseWinner()
+                toggleAnimationOn(false)
+                setWhosTurnItIsLive(whosTurn)
+                refresh()
+            }
+        }
+    }
+
+
+    // Start the animation by showing the first frame
+    showNextFrame(0);
+}    
