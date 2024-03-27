@@ -1126,6 +1126,9 @@ class Game:
         # Get db instance
         db = Database()
 
+        # TESTING FOR BALL BEHAVIOUR
+        debug = ""
+
         # Is this player 1 or player 2 shooting?
         playerName = self.player1Name if self.whosTurnItIs == 1 else self.player2Name
 
@@ -1159,6 +1162,8 @@ class Game:
         # Tack on svg header
         svg = HEADER 
 
+        debug = ""
+
         # SHOOT REWRITE FOR OPTIMIZATION AND CHECKING STATUS OF TABLE WITH EVERY SEGMENT
         tablesToWrite = []
 
@@ -1175,6 +1180,8 @@ class Game:
             # Save old table to simulate from as well
             startTable = table
 
+            debug = debug + "----- SEGMENT START --------\n"
+
             # Run segment and get updated table
             table = table.segment()
 
@@ -1187,6 +1194,10 @@ class Game:
                 
                 tablesToWrite.append(startTable)
                 svg = svg +  "<g class='hidden frame' >" + startTable.svg(False) + "</g>\n"
+
+                debug = debug + "-------- LAST TABLE BEFORE END ---------"
+                debug = debug + str(startTable) + "\n"
+
                 break 
 
             # Need to compare/check for sunken balls
@@ -1204,15 +1215,18 @@ class Game:
 
                 name = self.player1Name if winner == 1 else self.player2Name
                 svg = svg + f"<g class='hidden frame winner' > {name} Wins! </g>"
+
+                debug = debug + f"WINNER: {name} Wins! \n"
                 
             # First thing is letting client know to assign balls
             if (self.lowBallPlayer is None and lowBallPlayer is not None):
                 svg = svg + f"<g class='hidden frame lowBall' > {lowBallPlayer} </g>"
 
+                debug = debug + f" LOW BALL PLAYER ASSIGNED: {lowBallPlayer} \n" 
+
                 # Also need to confirm such in db
                 self.updateLowBallPlayer(lowBallPlayer)
 
-                name = self.player1Name if lowBallPlayer == 1 else self.player2Name
 
 
             # If we sunk a ball, indicate as such within svg to client
@@ -1224,6 +1238,9 @@ class Game:
                     highBallSunk = True
                 
                 svg = svg + f"<g class='hidden frame ballSunk' > {ballSunk} </g>"
+
+
+                debug = debug + f"BALL SUNK: ' > {ballSunk} \n"
  
 
             # Get time elapsed and number of frames
@@ -1244,12 +1261,16 @@ class Game:
                 # Tack svg frame onto reel
                 svg = svg +  "<g class='hidden frame' >" + newTable.svg(False) + "</g>\n"
 
+                debug = debug + str(newTable) + "\n" 
 
                 # Provided roll function does not cast deaccelerating balls to still
                 # Must include actual frame sent by C segment function
                 if (i == frames and table.segment() is not None):
                     tablesToWrite.append(table)
                     svg = svg +  "<g class='hidden frame' >" + table.svg(False) + "</g>\n"
+
+                    debug = debug + "-------- LAST FRAME OF THIS SEGMENT WITH CHANGES APPLIED --------"
+                    debug = debug + str(table) + "\n" 
 
         # Do all writing to db here
         db.batchWriteTable(tablesToWrite, shotId)
@@ -1274,6 +1295,8 @@ class Game:
         
         # Tack on footer
         svg = svg + FOOTER
+
+        print(debug)
 
         # Return shotId to make it easiest on server side
         # Update: return massive svg with frames as well
