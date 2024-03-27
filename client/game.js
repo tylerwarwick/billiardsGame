@@ -132,7 +132,7 @@ const parseWinner = () => {
 
     // Sort of useless but get rid of 8 ball
     $('#8p1').remove()
-    $('#p2').remove()
+    $('#8p2').remove()
 
     $('#tableContent').html($('#winnerModal').html())
 
@@ -231,8 +231,8 @@ const animate = (svg) => {
                 const num = parseInt(currentFrame.html())
                 
                 requestAnimationFrame(() => {
-                    setLowBall(num)
                     showNextFrame(index + 1);
+                    setLowBall(num)
                 }); 
             } 
 
@@ -242,16 +242,16 @@ const animate = (svg) => {
                 // Remove ball from list for player 
                 // May need to come back and delete 8 ball
                 requestAnimationFrame(() => {
-                    $(`#${num}`).remove()
                     showNextFrame(index + 1);
+                    $(`#${num}`).remove()
                 }); 
             }
 
             else if (currentFrame.hasClass('winner')){
                 // Push winner into winner modal
                 requestAnimationFrame(() => {
-                    $('#declareWinner').empty().html(currentFrame.html())
                     showNextFrame(index + 1);
+                    $('#declareWinner').empty().html(currentFrame.html())
                 }); 
             }
 
