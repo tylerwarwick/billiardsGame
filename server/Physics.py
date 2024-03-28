@@ -1133,9 +1133,6 @@ class Game:
         # Get db instance
         db = Database()
 
-        # TESTING FOR BALL BEHAVIOUR
-        debug = ""
-
         # Is this player 1 or player 2 shooting?
         playerName = self.player1Name if self.whosTurnItIs == 1 else self.player2Name
 
