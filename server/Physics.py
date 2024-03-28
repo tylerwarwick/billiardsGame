@@ -378,6 +378,8 @@ class Table( phylib.phylib_table ):
         for ball in self:
             if isinstance( ball, RollingBall ):
                 # create4 a new ball with the same number as the old ball
+                ballObj = ball.obj.rolling_ball                
+
                 new_ball = RollingBall( ball.obj.rolling_ball.number,
                                         Coordinate(0,0),
                                         Coordinate(0,0),
@@ -386,18 +388,18 @@ class Table( phylib.phylib_table ):
                 # compute where it rolls to
                 phylib.phylib_roll( new_ball, ball, t )
 
-                """
                 # EXPERIMENTAL: This is his code but I want to check for a ball coming to stand still here
                 velX = new_ball.obj.rolling_ball.vel.x
                 velY = new_ball.obj.rolling_ball.vel.y
                 speed = m.sqrt((velX*velX) + (velY * velY)) 
 
                 if (speed <= phylib.PHYLIB_VEL_EPSILON):
-                    new_ball.type = phylib.PHYLIB_STILL_BALL
-                    new_ball.__class__ = StillBall
-                """
-                # add ball to table
-                new += new_ball
+                    new += StillBall(ball.obj.rolling_ball.number, Coordinate(ball.obj.rolling_ball.pos.x, ball.obj.rolling_ball.pos.y))                    
+
+
+                else:
+                    # add ball to table
+                    new += new_ball
               
         
             if isinstance( ball, StillBall ):
