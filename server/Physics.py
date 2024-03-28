@@ -1250,8 +1250,6 @@ class Game:
                 # Tack svg frame onto reel
                 svg = svg +  "<g class='hidden frame' >" + newTable.svg(False) + "</g>\n"
 
-                debug = debug + str(newTable) + "\n" 
-
                 # Provided roll function does not cast deaccelerating balls to still
                 # Must include actual frame sent by C segment function
                 if (i == frames and table.segment() is not None):
