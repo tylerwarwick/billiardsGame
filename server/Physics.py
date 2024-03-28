@@ -361,7 +361,7 @@ class Table( phylib.phylib_table ):
             returnString += HEADER
 
         #Return svg representation
-        returnString = returnString + """<rect width="1370" height="2720" x="-10" y="-10" fill="#064e3b" />""";
+        returnString = returnString + """<rect width="1365" height="2715" x="-10" y="-10" fill="#064e3b" />""";
 
        
 
