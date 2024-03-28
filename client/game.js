@@ -212,46 +212,51 @@ const animate = (svg) => {
     function showNextFrame(index) {
         // Get current frame just the once
         const currentFrame = frames.eq(index)
+        const nextFrame = frames.eq(index+1)
 
         // Hide the current frame (if any)
         if (index > 0) {
-            frames.eq(index - 1).addClass('hidden');
+            //frames.eq(index - 1).addClass('hidden');
 
-            if (currentFrame.hasClass('lowBall') || 
-                currentFrame.hasClass('ballSunk') || 
-                currentFrame.hasClass('winner')) {
-                    frames.eq(index + 1).removeClass('hidden')
+            if (nextFrame.hasClass('lowBall') || 
+                nextFrame.hasClass('ballSunk') || 
+                nextFrame.hasClass('winner')) {
+                    frames.eq(index).addClass('hidden')
                 }
+            else frames.eq(index-1).addClass('hidden')
         }
     
         // Show the next frame
         if (index < frameCount) {
             // We have to process info frames
-            if (currentFrame.hasClass('lowBall')) {
-                const num = parseInt(currentFrame.html())
+            if (nextFrame.hasClass('lowBall')) {
+                const num = parseInt(nextFrame.html())
                 
                 requestAnimationFrame(() => {
                     setLowBall(num)
-                    showNextFrame(index + 1);
+                    //frames.eq(index).addClass("hidden")
+                    showNextFrame(index + 2);
                 }); 
             } 
 
-            else if (currentFrame.hasClass('ballSunk')) {
-                const num = parseInt(currentFrame.html())
+            else if (nextFrame.hasClass('ballSunk')) {
+                const num = parseInt(nextFrame.html())
 
                 // Remove ball from list for player 
                 // May need to come back and delete 8 ball
                 requestAnimationFrame(() => {
                     $(`#${num}`).remove()
-                    showNextFrame(index + 1);
+                    //frames.eq(index).addClass("hidden")
+                    showNextFrame(index + 2);
                 }); 
             }
 
-            else if (currentFrame.hasClass('winner')){
+            else if (nextFrame.hasClass('winner')){
                 // Push winner into winner modal
                 requestAnimationFrame(() => {
-                    $('#declareWinner').empty().html(currentFrame.html())
-                    showNextFrame(index + 1);
+                    $('#declareWinner').empty().html(nextFrame.html())
+                    //frames.eq(index).addClass("hidden")
+                    showNextFrame(index + 2);
                 }); 
             }
 
@@ -259,6 +264,7 @@ const animate = (svg) => {
                 // requestAnimation Attempt
                 currentFrame.removeClass('hidden')
                 requestAnimationFrame(() => {
+                    //frames.eq(index-1).addClass("hidden")
                     showNextFrame(index + 1);
                 });
             }

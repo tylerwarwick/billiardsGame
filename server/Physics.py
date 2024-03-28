@@ -353,12 +353,17 @@ class Table( phylib.phylib_table ):
 
     # SVG method
     def svg(self, header=True):
-        #Return svg representation
-        returnString = """<rect width="1350" height="2700" x="0" y="0" fill="#064e3b" />""";
 
-        #Append header
+        returnString = ""
+
+         #Append header
         if header:
             returnString += HEADER
+
+        #Return svg representation
+        returnString = returnString + """<rect width="1370" height="2720" x="-10" y="-10" fill="#064e3b" />""";
+
+       
 
         #Append svg for each object
         for object in self:
