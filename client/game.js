@@ -90,8 +90,8 @@ const shoot = (xVel, yVel) => {
     const JSONData = JSON.stringify(
     {
         gameId : gameId,
-        xVel : xVel,
-        yVel : yVel 
+        xVel : 0,
+        yVel : -4000 
     })
 
     $.ajax({
