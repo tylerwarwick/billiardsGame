@@ -1174,7 +1174,6 @@ class Game:
 
             # Run segment and get updated table
             table = table.segment()
-            #print(table)
 
             # Check if we are done iterating
             if (table is None):
@@ -1264,7 +1263,10 @@ class Game:
             else:
                 if (highBallSunk is None):
                     self.toggleTurn()
-
+        
+        elif ballSunk == 0:
+            self.toggleTurn()
+        
         # Now let client know the news:
         svg = svg + "<g class='frame turnUpdate' >" + str(self.whosTurnItIs) + "</g>\n" 
         
