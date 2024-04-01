@@ -741,9 +741,8 @@ phylib_table *phylib_segment(phylib_table *table) {
         // Stopped function will do the necesarry type conversions
         // We'll update our flag from loop above to let it know if we've had a
         // ball come to a stop
-        stoppedBall = phylib_stopped(simulatedBall);
+        stoppedBall = (phylib_stopped(simulatedBall) == 1) ? 1 : stoppedBall;
 
-        // We point pointer at this index to new value and free the old one
         free(newTable->object[i]);
         newTable->object[i] = simulatedBall;
       }

@@ -392,19 +392,9 @@ class Table( phylib.phylib_table ):
             
                 # compute where it rolls to
                 phylib.phylib_roll( new_ball, ball, t )
-
-                # EXPERIMENTAL: This is his code but I want to check for a ball coming to stand still here
-                velX = new_ball.obj.rolling_ball.vel.x
-                velY = new_ball.obj.rolling_ball.vel.y
-                speed = m.sqrt((velX*velX) + (velY * velY)) 
-
-                if (speed <= phylib.PHYLIB_VEL_EPSILON):
-                    new += StillBall(ball.obj.rolling_ball.number, Coordinate(ball.obj.rolling_ball.pos.x, ball.obj.rolling_ball.pos.y))                    
-
-
-                else:
-                    # add ball to table
-                    new += new_ball
+               
+                # add ball to table
+                new += new_ball
               
         
             if isinstance( ball, StillBall ):
@@ -1184,6 +1174,7 @@ class Game:
 
             # Run segment and get updated table
             table = table.segment()
+            #print(table)
 
             # Check if we are done iterating
             if (table is None):
