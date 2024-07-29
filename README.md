@@ -40,7 +40,7 @@ To run the pool game using Docker:
 
 1. **Clone the Repository:** Clone this repository to your local machine.
    ```bash
-   git clone https://github.com/yourusername/pool-game.git
+   git clone https://github.com/tylerwarwick/billiardsGame.git
 
 2. **Navigate to the Repository Directory:** 
    ```bash
