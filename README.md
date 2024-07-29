@@ -48,11 +48,11 @@ To run the pool game using Docker:
 
 3. **Build Docker Image:** Build the Docker image using the provided Dockerfile.
    ```bash
-   docker build -t billiardsGame .
+   docker build -t billiards_game .
 
 4. **Run Docker Container:** Run the Docker container from the built image.
    ```bash
-   docker run -p 3000:3000 billiardsGame
+   docker run -p 3000:3000 billiards_game
 
 5. **Access Frontend:** Open a web browser and navigate to the following address to play some pool!
    ```plaintext
